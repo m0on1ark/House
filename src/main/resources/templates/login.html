@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Log in — House</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/groceries.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <div class="nav-auth">
+        <a class="btn" href="/register">Sign up</a>
+    </div>
+</nav>
+
+<div th:replace="~{fragments/groceries :: groceries}"></div>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h1>Log in</h1>
+        <p class="auth-sub">Welcome back — the neighbors missed you.</p>
+
+        <p class="auth-error" th:if="${param.error}">Invalid username or password</p>
+
+        <form method="post" action="/login">
+            <div class="auth-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="auth-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button class="btn btn-solid" type="submit">Log in</button>
+        </form>
+
+        <p class="auth-alt">No account yet? <a href="/register">Sign up</a></p>
+    </div>
+</div>
+
+</body>
+</html>

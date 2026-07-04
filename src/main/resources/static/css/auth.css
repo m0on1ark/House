@@ -1,0 +1,47 @@
+.auth-wrap {
+    position: relative;
+    min-height: calc(100vh - 78px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    overflow: hidden;
+}
+.auth-card {
+    position: relative;
+    z-index: 1;
+    width: min(430px, 100%);
+    background: #f4f2ed;
+    border: 1px solid var(--ink);
+    padding: 42px 40px;
+    animation: card-in .55s cubic-bezier(.2, .7, .3, 1) both;
+}
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: none; }
+}
+.auth-card::before {
+    content: "";
+    position: absolute;
+    top: -25px;
+    right: 26px;
+    width: 150px;
+    height: 32px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: left bottom, center bottom, right bottom;
+    background-size: 24px, 30px, 22px;
+    background-image: var(--g-milk), var(--g-bread), var(--g-apple);
+}
+.auth-card h1 { font-size: 26px; margin-bottom: 6px; }
+.auth-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+.auth-card .btn { width: 100%; text-align: center; margin-top: 8px; }
+.auth-alt {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+}
+.auth-alt a { color: var(--ink); font-weight: 600; }

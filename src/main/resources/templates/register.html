@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign up — House</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/groceries.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <div class="nav-auth">
+        <a class="btn" href="/login">Log in</a>
+    </div>
+</nav>
+
+<div th:replace="~{fragments/groceries :: groceries}"></div>
+
+<div class="auth-wrap">
+    <div class="auth-card">
+        <h1>Sign up</h1>
+        <p class="auth-sub">Create an account — your building is waiting.</p>
+
+        <p class="auth-error" th:if="${param.error}">Username or email is already taken</p>
+
+        <form method="post" action="/register">
+            <div class="auth-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="auth-field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="auth-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button class="btn btn-solid" type="submit">Create account</button>
+        </form>
+
+        <p class="auth-alt">Already have an account? <a href="/login">Log in</a></p>
+    </div>
+</div>
+
+</body>
+</html>
