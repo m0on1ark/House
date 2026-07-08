@@ -1,0 +1,176 @@
+.deals-main {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 70px 24px;
+}
+.deals-main h2 { margin-bottom: 26px; }
+.deals-main .auth-error { margin-bottom: 20px; }
+.deal-new { margin-bottom: 28px; }
+.deal-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+
+.store-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin: 12px 0 2px;
+    vertical-align: middle;
+}
+.store-logo {
+    flex: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    border: 1px solid rgba(28, 28, 28, .18);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    box-shadow: 2px 2px 0 rgba(28, 28, 28, .16);
+}
+.store-name {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    color: var(--ink);
+}
+.store-biedronka { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23fff'/%3E%3Cellipse cx='20' cy='24' rx='13' ry='11' fill='%23e2001a'/%3E%3Crect x='19' y='15' width='2' height='18' fill='%231a1a1a'/%3E%3Ccircle cx='13' cy='23' r='2.3' fill='%231a1a1a'/%3E%3Ccircle cx='27' cy='23' r='2.3' fill='%231a1a1a'/%3E%3Ccircle cx='15' cy='30' r='1.9' fill='%231a1a1a'/%3E%3Ccircle cx='25' cy='30' r='1.9' fill='%231a1a1a'/%3E%3Cpath d='M12 16 a9 7 0 0 1 16 0 Z' fill='%231a1a1a'/%3E%3Ccircle cx='16.5' cy='12.5' r='1.5' fill='%23fff'/%3E%3Ccircle cx='23.5' cy='12.5' r='1.5' fill='%23fff'/%3E%3C/svg%3E"); }
+.store-lidl { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%230050aa'/%3E%3Ccircle cx='20' cy='20' r='12' fill='%23e2001a'/%3E%3Ccircle cx='20' cy='20' r='7.5' fill='%23ffd400'/%3E%3C/svg%3E"); }
+.store-zabka { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%234aa12e'/%3E%3Ccircle cx='14' cy='14' r='6' fill='%234aa12e' stroke='%232e6b1c' stroke-width='1.5'/%3E%3Ccircle cx='26' cy='14' r='6' fill='%234aa12e' stroke='%232e6b1c' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='14' r='2.6' fill='%231a1a1a'/%3E%3Ccircle cx='26' cy='14' r='2.6' fill='%231a1a1a'/%3E%3Cpath d='M11 25 q9 8 18 0' stroke='%231a3d12' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.store-kaufland { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23e10915'/%3E%3Cpath d='M9 13 h4 l3 12 h13' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linejoin='round' stroke-linecap='round'/%3E%3Cpath d='M15 16 h16 l-2 7 H16' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linejoin='round'/%3E%3Ccircle cx='19' cy='29' r='2' fill='%23fff'/%3E%3Ccircle cx='27' cy='29' r='2' fill='%23fff'/%3E%3C/svg%3E"); }
+.store-carrefour { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23fff'/%3E%3Cpath d='M19 8 L7 20 L19 32 L14 20 Z' fill='%23004e9e'/%3E%3Cpath d='M21 8 L33 20 L21 32 L26 20 Z' fill='%23e2001a'/%3E%3C/svg%3E"); }
+.store-auchan { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23fff'/%3E%3Cpath d='M8 23 q4 -11 15 -9 q-3 3 -2 6 q5 -1 8 2 q-4 1 -6 4 q-2 4 -8 4 q-9 0 -7 -7 Z' fill='%23e2001a'/%3E%3Ccircle cx='13' cy='19' r='1.3' fill='%23fff'/%3E%3C/svg%3E"); }
+.store-dino { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%233a8a2e'/%3E%3Cpath d='M8 31 q1 -7 6 -8 q0 -9 8 -10 q5 0 5 4 q3 0 3 3 q-2 1 -3 0 q-1 3 -4 4 q1 4 5 5 q3 1 3 3 h-8 q-1 -3 1 -5 q-4 1 -7 -1 q0 3 -2 5 Z' fill='%23e9f2e4'/%3E%3C/svg%3E"); }
+.store-netto { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23ffcc00'/%3E%3Cpath d='M7 27 v-4 q0 -2 2 -3 l2 -1 1 -4 q1 -2 3 -2 q1 -2 3 -2 q3 0 4 3 h6 q2 0 2 2 v3 q0 2 -2 2 v8 h-3 v-6 h-10 v6 h-3 v-6 q-3 0 -5 -1 v7 h-3 Z' fill='%231a1a1a'/%3E%3C/svg%3E"); }
+.store-generic { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%238a857b'/%3E%3Cpath d='M9 18 L11 11 H29 L31 18 Z' fill='%23fff'/%3E%3Crect x='11' y='18' width='18' height='12' fill='%23fff'/%3E%3Crect x='17' y='22' width='6' height='8' fill='%238a857b'/%3E%3C/svg%3E"); }
+.deal-form {
+    margin-top: 16px;
+    border: 1px solid var(--ink);
+    background: #f4f2ed;
+    padding: 24px;
+    text-align: left;
+}
+.deal-form .btn { width: 100%; margin-top: 4px; }
+.deal-nums {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+.deal-card {
+    position: relative;
+    border: 1px solid var(--ink);
+    background: #f4f2ed;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+.deal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 8px 0 rgba(28, 28, 28, .12);
+}
+.deal-photo {
+    display: block;
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border: 1px solid var(--ink);
+    margin-bottom: 16px;
+    padding: 6px;
+    background: #f4f2ed;
+    cursor: zoom-in;
+}
+
+.btn-danger { border-color: #9c4a2b; color: #9c4a2b; }
+.btn-danger:hover { background: #9c4a2b; color: #f7f3ec; text-shadow: none; }
+.btn-danger:hover::before { opacity: 0; }
+.deal-file {
+    width: 100%;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+}
+.deal-file::file-selector-button {
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-right: 12px;
+    padding: 8px 16px;
+    border: 1px solid var(--ink);
+    background: #b0603f;
+    color: #f7f3ec;
+    cursor: pointer;
+}
+.deal-file::file-selector-button:hover { background: #9c4a2b; }
+.deal-card::after {
+    content: "";
+    position: absolute;
+    right: -6px;
+    bottom: -6px;
+    width: 62px;
+    height: 62px;
+    background: no-repeat center / contain;
+    opacity: .12;
+    transform: rotate(-8deg);
+    transition: opacity .3s ease, transform .4s cubic-bezier(.2, 1.3, .5, 1);
+    pointer-events: none;
+}
+.deal-card:nth-child(6n+1)::after { background-image: var(--g-apple); }
+.deal-card:nth-child(6n+2)::after { background-image: var(--g-milk); }
+.deal-card:nth-child(6n+3)::after { background-image: var(--g-bread); }
+.deal-card:nth-child(6n+4)::after { background-image: var(--g-cheese); }
+.deal-card:nth-child(6n+5)::after { background-image: var(--g-bottle); }
+.deal-card:nth-child(6n)::after   { background-image: var(--g-can); }
+.deal-card:hover::after { opacity: .3; transform: rotate(6deg) scale(1.08); }
+
+.deal-bar {
+    position: relative;
+    height: 9px;
+    margin-top: 12px;
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    overflow: hidden;
+}
+.deal-bar > span {
+    display: block;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg, var(--ink) 0 6px, #3a3a37 6px 12px);
+    transform-origin: left center;
+    animation: bar-fill .8s cubic-bezier(.2, .7, .3, 1) both;
+}
+@keyframes bar-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.deal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+.deal-head h3 { font-size: 18px; }
+.deal-status {
+    flex: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    padding: 3px 8px;
+}
+.deal-status.closed { background: var(--ink); color: var(--bg); }
+.deal-progress { font-size: 14px; margin-top: 12px; }
+.deal-claim { display: flex; gap: 10px; margin-top: 14px; }
+.deal-mine {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    font-size: 14px;
+}
+.deal-claim input {
+    width: 90px;
+    padding: 10px 12px;
+    font: inherit;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    background: var(--bg);
+}
