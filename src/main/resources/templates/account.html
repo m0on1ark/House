@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My account — House</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/groceries.css">
+    <link rel="stylesheet" href="/css/account.css">
+    <link rel="stylesheet" href="/css/deals.css">
+</head>
+<body>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <div th:replace="~{fragments/nav :: menu}"></div>
+</nav>
+
+<div th:replace="~{fragments/groceries :: groceries}"></div>
+
+<main class="account-main">
+    <p class="sec-label">My account</p>
+
+    <div class="account-card profile-card">
+        <a class="settings-gear" href="/account/settings" title="Settings" aria-label="Settings">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z
+                         M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.6 7.6 0 0 0-1.7-1l-.4-2.5H10.9l-.4 2.5
+                         a7.6 7.6 0 0 0-1.7 1l-2.4-1-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1
+                         a7.6 7.6 0 0 0 1.7 1l.4 2.5h4.2l.4-2.5a7.6 7.6 0 0 0 1.7-1l2.4 1 2-3.4z"/>
+            </svg>
+        </a>
+
+        <div class="account-head">
+            <div class="avatar-wrap">
+                <img class="account-avatar" th:if="${hasAvatar}" src="/account/avatar" alt="Your avatar">
+                <svg class="account-avatar" th:unless="${hasAvatar}" viewBox="0 0 60 74" aria-hidden="true">
+                    <rect x="0" y="0" width="60" height="74" fill="#262626"/>
+                    <rect x="10" y="7" width="40" height="51" fill="#b8b1a2"/>
+                    <rect x="13.5" y="10.5" width="33" height="44" fill="#413e37"/>
+                    <path d="M13.5 10.5 h7.5 q-3 11 0 22 q-3 11 0 22 h-7.5 z" fill="#d8cec0"/>
+                    <path d="M46.5 10.5 h-7.5 q3 11 0 22 q3 11 0 22 h7.5 z" fill="#d8cec0"/>
+                    <polygon points="13.5,10.5 5,5 5,60 13.5,54.5" fill="#d5cec1"/>
+                    <polygon points="46.5,10.5 55,5 55,60 46.5,54.5" fill="#d5cec1"/>
+                    <path d="M17 59 q0 -15 13 -15 q13 0 13 15 z" fill="#b0603f"/>
+                    <rect x="13" y="49" width="9" height="10" rx="4.5" fill="#b0603f"/>
+                    <rect x="38" y="49" width="9" height="10" rx="4.5" fill="#b0603f"/>
+                    <circle cx="17.5" cy="58" r="3.4" fill="#e8b98a"/>
+                    <circle cx="42.5" cy="58" r="3.4" fill="#e8b98a"/>
+                    <circle cx="30" cy="33" r="11.5" fill="#e8b98a"/>
+                    <path d="M19.6 28 a11.5 11.5 0 0 1 20.8 0 z" fill="#1c1c1c"/>
+                    <circle cx="25.8" cy="33" r="1.7" fill="#1c1c1c"/>
+                    <circle cx="34.2" cy="33" r="1.7" fill="#1c1c1c"/>
+                    <path d="M27.4 38.5 q2.6 2.2 5.2 0" stroke="#1c1c1c" stroke-width="1.4"
+                          fill="none" stroke-linecap="round"/>
+                    <rect x="8" y="58" width="44" height="5" fill="#57534b"/>
+                </svg>
+            </div>
+            <div class="account-head-text">
+                <h1 th:text="${fullName != null ? fullName : username}">username</h1>
+                <p>Resident of House · <span th:text="'@' + ${username}">@username</span></p>
+                <p class="account-bio" th:if="${bio != null}" th:text="${bio}">bio</p>
+            </div>
+        </div>
+
+        <dl class="account-fields">
+            <div class="field">
+                <dt>Full name</dt>
+                <dd th:if="${fullName != null}" th:text="${fullName}">Jan Kowalski</dd>
+                <dd th:unless="${fullName != null}" class="dd-muted">Not set</dd>
+            </div>
+            <div class="field">
+                <dt>Username</dt>
+                <dd th:text="'@' + ${username}">@username</dd>
+            </div>
+            <div class="field">
+                <dt>Email</dt>
+                <dd th:text="${email}">mail@example.com</dd>
+            </div>
+            <div class="field">
+                <dt>Phone</dt>
+                <dd th:if="${phone != null}" th:text="${phone}">+48 …</dd>
+                <dd th:unless="${phone != null}" class="dd-muted">Not set</dd>
+            </div>
+            <div class="field">
+                <dt>Building</dt>
+                <dd th:if="${buildingAddress != null}" th:text="${buildingAddress}">street, city</dd>
+                <dd th:unless="${buildingAddress != null}" class="dd-muted">Not linked</dd>
+            </div>
+            <div class="field">
+                <dt>Floor</dt>
+                <dd th:if="${floor != null}" th:text="${floor}">3</dd>
+                <dd th:unless="${floor != null}" class="dd-muted">Not set</dd>
+            </div>
+            <div class="field">
+                <dt>Apartment</dt>
+                <dd th:if="${apartment != null}" th:text="${apartment}">12</dd>
+                <dd th:unless="${apartment != null}" class="dd-muted">Not set</dd>
+            </div>
+        </dl>
+    </div>
+
+    <div class="account-card deals-card">
+        <p class="sec-label">My deals</p>
+        <p class="settings-current dd-muted" th:if="${myDeals.isEmpty()}">
+            You haven't posted any deals yet.</p>
+        <div class="my-deal" th:each="d : ${myDeals}">
+            <div class="my-deal-info">
+                <h3 th:text="${d.productName}">Product</h3>
+                <p class="deal-meta">
+                    <span th:text="${d.storeName}">Store</span><span
+                        th:text="' · ' + ${d.claimedUnits()} + '/' + ${d.totalUnits} + ' units claimed'"></span>
+                </p>
+            </div>
+            <span class="deal-status"
+                  th:classappend="${d.status.name() == 'CLOSED'} ? 'closed'"
+                  th:text="${d.status.name() == 'CLOSED'} ? 'Complete' : 'Open'">Open</span>
+            <a class="btn" th:href="@{'/deals/' + ${d.id} + '/chat'}">Chat</a>
+            <form method="post" th:action="@{'/deals/' + ${d.id} + '/delete'}"
+                  onsubmit="return confirm('Delete this deal? This cannot be undone.');">
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<script src="/js/main.js" defer></script>
+</body>
+</html>
