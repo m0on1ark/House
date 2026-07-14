@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>House — split store deals with your neighbors</title>
+    <script th:inline="none">
+        try { if (!sessionStorage.getItem('introSeen')) document.documentElement.classList.add('intro-playing'); } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/deals.css">
+    <script src="/js/main.js" defer></script>
+    <script src="/js/lightbox.js" defer></script>
+</head>
+<body>
+
+<div class="intro" id="intro" aria-hidden="true">
+    <div class="intro-groceries">
+        <span class="intro-item" style="--x:8%;--y:16%;--img:var(--g-apple);--d:.10s;--r:-12deg"></span>
+        <span class="intro-item" style="--x:20%;--y:44%;--img:var(--g-bread);--d:.55s;--r:8deg"></span>
+        <span class="intro-item" style="--x:14%;--y:74%;--img:var(--g-cheese);--d:.28s;--r:-6deg"></span>
+        <span class="intro-item" style="--x:30%;--y:12%;--img:var(--g-milk);--d:.82s;--r:14deg"></span>
+        <span class="intro-item" style="--x:40%;--y:62%;--img:var(--g-bottle);--d:.40s;--r:-10deg"></span>
+        <span class="intro-item" style="--x:50%;--y:26%;--img:var(--g-can);--d:.95s;--r:6deg"></span>
+        <span class="intro-item" style="--x:60%;--y:80%;--img:var(--g-apple);--d:.18s;--r:12deg"></span>
+        <span class="intro-item" style="--x:68%;--y:18%;--img:var(--g-bread);--d:.68s;--r:-8deg"></span>
+        <span class="intro-item" style="--x:76%;--y:50%;--img:var(--g-cheese);--d:1.10s;--r:10deg"></span>
+        <span class="intro-item" style="--x:84%;--y:34%;--img:var(--g-milk);--d:.48s;--r:-14deg"></span>
+        <span class="intro-item" style="--x:90%;--y:70%;--img:var(--g-bottle);--d:.35s;--r:8deg"></span>
+        <span class="intro-item" style="--x:26%;--y:88%;--img:var(--g-can);--d:.75s;--r:-6deg"></span>
+        <span class="intro-item" style="--x:54%;--y:46%;--img:var(--g-apple);--d:1.25s;--r:12deg"></span>
+        <span class="intro-item" style="--x:88%;--y:12%;--img:var(--g-bread);--d:.60s;--r:-10deg"></span>
+        <span class="intro-item" style="--x:6%;--y:50%;--img:var(--g-cheese);--d:.90s;--r:6deg"></span>
+        <span class="intro-item" style="--x:44%;--y:86%;--img:var(--g-milk);--d:1.00s;--r:-12deg"></span>
+    </div>
+</div>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a th:href="${session.user == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
+        <li><a href="#chats">Building chats</a></li>
+    </ul>
+    <div class="nav-auth" th:if="${session.user == null}">
+        <a class="btn" href="/login">Log in</a>
+        <a class="btn btn-solid" href="/register">Sign up</a>
+    </div>
+    <th:block th:unless="${session.user == null}">
+        <div th:replace="~{fragments/nav :: menu}"></div>
+    </th:block>
+</nav>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <clipPath id="wclip"><rect x="3" y="0" width="54" height="59"/></clipPath>
+
+        <g id="w-closed">
+            <rect x="11" y="8" width="38" height="50" fill="#b8b1a2"/>
+            <rect x="14.5" y="11.5" width="31" height="43" fill="#e9e4d5"/>
+            <polygon points="16,54.5 30,11.5 37,11.5 23,54.5" fill="#ffffff" opacity=".33"/>
+            <rect x="28.9" y="11.5" width="2.2" height="43" fill="#b8b1a2"/>
+            <rect x="14.5" y="31.9" width="31" height="2.2" fill="#b8b1a2"/>
+            <rect x="8" y="58" width="44" height="5" fill="#57534b"/>
+        </g>
+        <g id="w-double">
+            <rect x="8" y="8" width="19" height="50" fill="#b8b1a2"/>
+            <rect x="11" y="11" width="13" height="44" fill="#e9e4d5"/>
+            <rect x="11" y="31.9" width="13" height="2.2" fill="#b8b1a2"/>
+            <polygon points="12,55 21,11 17,11 11,42" fill="#ffffff" opacity=".3"/>
+            <rect x="33" y="8" width="19" height="50" fill="#b8b1a2"/>
+            <rect x="36" y="11" width="13" height="44" fill="#e9e4d5"/>
+            <rect x="36" y="31.9" width="13" height="2.2" fill="#b8b1a2"/>
+            <polygon points="37,55 46,11 42,11 36,42" fill="#ffffff" opacity=".3"/>
+            <rect x="5" y="58" width="50" height="5" fill="#57534b"/>
+        </g>
+        <g id="w-small">
+            <rect x="16" y="16" width="28" height="30" fill="#b8b1a2"/>
+            <rect x="19" y="19" width="22" height="24" fill="#e9e4d5"/>
+            <rect x="29" y="19" width="2" height="24" fill="#b8b1a2"/>
+            <polygon points="21,43 28,19 24,19 19,36" fill="#ffffff" opacity=".3"/>
+            <rect x="13" y="46" width="34" height="4.5" fill="#57534b"/>
+        </g>
+        <g id="w-lit">
+            <rect x="11" y="8" width="38" height="50" fill="#b8b1a2"/>
+            <rect x="14.5" y="11.5" width="31" height="43" fill="#e8bd55"/>
+            <path d="M14.5 11.5 h8 q-3.5 11 -1 21.5 q-2.5 11 1 21.5 h-8 z" fill="#b0603f"/>
+            <path d="M45.5 11.5 h-8 q3.5 11 1 21.5 q2.5 11 -1 21.5 h8 z" fill="#b0603f"/>
+            <rect x="28.9" y="11.5" width="2.2" height="43" fill="#b8b1a2"/>
+            <rect x="14.5" y="31.9" width="31" height="2.2" fill="#b8b1a2"/>
+            <rect x="8" y="58" width="44" height="5" fill="#57534b"/>
+        </g>
+        <g id="w-open">
+            <rect x="10" y="7" width="40" height="51" fill="#b8b1a2"/>
+            <rect x="13.5" y="10.5" width="33" height="44" fill="#413e37"/>
+            <path d="M13.5 10.5 h7.5 q-3 11 0 22 q-3 11 0 22 h-7.5 z" fill="#d8cec0"/>
+            <path d="M46.5 10.5 h-7.5 q3 11 0 22 q3 11 0 22 h7.5 z" fill="#d8cec0"/>
+            <polygon points="13.5,10.5 5,5 5,60 13.5,54.5" fill="#d5cec1"/>
+            <polygon points="12,13.5 6.5,9.5 6.5,55.5 12,51.5" fill="#eae5d8"/>
+            <polygon points="46.5,10.5 55,5 55,60 46.5,54.5" fill="#d5cec1"/>
+            <polygon points="48,13.5 53.5,9.5 53.5,55.5 48,51.5" fill="#eae5d8"/>
+            <rect x="8" y="58" width="44" height="5" fill="#57534b"/>
+        </g>
+        <g id="flowers">
+            <path d="M21 55 q-3 -4 -5 -6" stroke="#6d7a4f" stroke-width="1.6" fill="none"/>
+            <path d="M30 55 v-8" stroke="#6d7a4f" stroke-width="1.6" fill="none"/>
+            <path d="M39 55 q3 -4 5 -6" stroke="#6d7a4f" stroke-width="1.6" fill="none"/>
+            <circle cx="15.5" cy="47.5" r="3.8" fill="#c1554d"/>
+            <circle cx="30" cy="45.5" r="4" fill="#e8bd55"/>
+            <circle cx="44.5" cy="47.5" r="3.8" fill="#c78d86"/>
+            <circle cx="15.5" cy="47.5" r="1.4" fill="#7a3a34"/>
+            <circle cx="30" cy="45.5" r="1.4" fill="#a8842c"/>
+            <circle cx="44.5" cy="47.5" r="1.4" fill="#8f5a55"/>
+            <rect x="13" y="54" width="34" height="9" rx="2" fill="#9c5a3c"/>
+            <rect x="13" y="54" width="34" height="2.4" rx="1" fill="#7f4830"/>
+        </g>
+        <g id="p-lean">
+            <path d="M17 59 q0 -15 13 -15 q13 0 13 15 z" fill="var(--pshirt)"/>
+            <rect x="13" y="49" width="9" height="10" rx="4.5" fill="var(--pshirt)"/>
+            <rect x="38" y="49" width="9" height="10" rx="4.5" fill="var(--pshirt)"/>
+            <circle cx="17.5" cy="58" r="3.4" fill="var(--pskin)"/>
+            <circle cx="42.5" cy="58" r="3.4" fill="var(--pskin)"/>
+            <circle cx="30" cy="33" r="11.5" fill="var(--pskin)"/>
+            <path d="M19.6 28 a11.5 11.5 0 0 1 20.8 0 z" fill="var(--phair)"/>
+            <circle cx="25.8" cy="33" r="1.7" fill="#1c1c1c"/>
+            <circle cx="34.2" cy="33" r="1.7" fill="#1c1c1c"/>
+            <path d="M27.4 38.5 q2.6 2.2 5.2 0" stroke="#1c1c1c" stroke-width="1.4"
+                  fill="none" stroke-linecap="round"/>
+        </g>
+        <g id="p-wave">
+            <path d="M17 59 q0 -15 13 -15 q13 0 13 15 z" fill="var(--pshirt)"/>
+            <rect x="13" y="49" width="9" height="10" rx="4.5" fill="var(--pshirt)"/>
+            <circle cx="17.5" cy="58" r="3.4" fill="var(--pskin)"/>
+            <rect x="39" y="28" width="8" height="20" rx="4" fill="var(--pshirt)"
+                  transform="rotate(25 43 48)"/>
+            <circle cx="52" cy="27" r="3.8" fill="var(--pskin)"/>
+            <circle cx="30" cy="33" r="11.5" fill="var(--pskin)"/>
+            <path d="M19.6 28 a11.5 11.5 0 0 1 20.8 0 z" fill="var(--phair)"/>
+            <circle cx="25.8" cy="33" r="1.7" fill="#1c1c1c"/>
+            <circle cx="34.2" cy="33" r="1.7" fill="#1c1c1c"/>
+            <ellipse cx="30" cy="39" rx="2.4" ry="2.8" fill="#1c1c1c"/>
+        </g>
+        <g id="p-cat">
+            <path d="M37 57 q9 -3 7 -12" stroke="#a39a8d" stroke-width="3.2"
+                  fill="none" stroke-linecap="round"/>
+            <ellipse cx="30" cy="51" rx="10" ry="8.5" fill="#a39a8d"/>
+            <circle cx="30" cy="38" r="7.5" fill="#a39a8d"/>
+            <polygon points="24,34 22,26 28,31" fill="#a39a8d"/>
+            <polygon points="36,34 38,26 32,31" fill="#a39a8d"/>
+            <circle cx="27" cy="37.5" r="1.6" fill="#3a352e"/>
+            <circle cx="33" cy="37.5" r="1.6" fill="#3a352e"/>
+        </g>
+    </defs>
+</svg>
+
+<header class="hero">
+    <div class="grocery-pops" aria-hidden="true"></div>
+    <div class="skyline">
+        <div class="bletter" aria-label="H">
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74" class="p1"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-wave"/></g></g></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-open"/><use href="#flowers"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74" class="p3"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-lean"/></g></g></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i>
+        </div>
+        <div class="bletter" aria-label="O">
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74" class="p2"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-lean"/></g></g></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-open"/><use href="#flowers"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+        </div>
+        <div class="bletter" aria-label="U">
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74" class="p4"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-wave"/></g></g></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-cat"/></g></g></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i>
+        </div>
+        <div class="bletter" aria-label="S">
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-open"/><use href="#flowers"/></svg></i><i></i><i></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i><i class="b"><svg viewBox="0 0 60 74" class="p1"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-lean"/><circle cx="30" cy="20.5" r="4.5" fill="var(--phair)"/></g></g></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i>
+            <i></i><i></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i>
+        </div>
+        <div class="bletter" aria-label="E">
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74" class="p2"><use href="#w-open"/><g clip-path="url(#wclip)"><g class="res"><use href="#p-wave"/></g></g></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i><i></i><i></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-open"/><use href="#flowers"/></svg></i><i></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-double"/></svg></i><i></i><i></i>
+            <i class="b"><svg viewBox="0 0 60 74"><use href="#w-lit"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-closed"/></svg></i><i class="b"><svg viewBox="0 0 60 74"><use href="#w-small"/></svg></i>
+        </div>
+    </div>
+    <div class="ground"></div>
+
+    <p class="hero-kicker">One building. One cart.</p>
+    <p class="hero-tagline">The deal says buy six.<br>You only need two.</p>
+    <p class="hero-sub">Post the offer to your building — neighbors claim the rest.
+        Everyone gets the discount, nobody gets the surplus.</p>
+    <a class="btn btn-solid" href="/register" th:if="${session.user == null}">Join your building</a>
+    <a class="btn btn-solid" href="/deals" th:unless="${session.user == null}">Open your building's deals</a>
+</header>
+
+<section id="how">
+    <p class="sec-label">Process</p>
+    <h2>How it works</h2>
+    <div class="grid3">
+        <div class="cell-card p-milk">
+            <div class="prod-label">
+                <span class="num">01</span>
+                <h3>Spot a deal</h3>
+                <p>The store offer is great — but only if you buy in bulk. You don't need that much.</p>
+            </div>
+        </div>
+        <div class="cell-card p-bread">
+            <div class="prod-label">
+                <span class="num">02</span>
+                <h3>Post it to your building</h3>
+                <p>Share the deal with your building: what, where, and how many units are up for grabs.</p>
+            </div>
+        </div>
+        <div class="cell-card p-cheese">
+            <div class="prod-label">
+                <span class="num">03</span>
+                <h3>Neighbors take the rest</h3>
+                <p>Everyone claims what they need. One person buys — the others pick up their share.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="deals">
+    <p class="sec-label">Deals</p>
+
+    <div th:if="${session.user == null}">
+        <h2>Deals from your building will live here</h2>
+        <div class="empty">
+            <p class="empty-title">Nothing here yet</p>
+            <p>House is just moving in. Once you join your building,
+                offers from your neighbors will show up in this space.</p>
+        </div>
+    </div>
+
+    <div th:unless="${session.user == null}">
+        <h2>Your building's deals</h2>
+
+        <div th:if="${deals != null and !deals.isEmpty()}">
+            <div class="deal-card" th:each="d : ${deals}"
+                 th:with="mine=${d.author.id == session.user.id}, remaining=${d.remainingUnits()}">
+                <img class="deal-photo" th:if="${d.hasImage()}"
+                     th:src="@{'/deals/' + ${d.id} + '/image'}" alt="" loading="lazy">
+                <div class="deal-head">
+                    <h3 th:text="${d.productName}">Product</h3>
+                    <span class="deal-status"
+                          th:classappend="${d.status.name() == 'CLOSED'} ? 'closed'"
+                          th:text="${d.status.name() == 'CLOSED'} ? 'Complete' : 'Open'">Open</span>
+                </div>
+                <span class="store-tag"
+                      th:with="sn=${#strings.toLowerCase(d.storeName)},
+                               slug=${sn == 'żabka' ? 'zabka' : (sn == 'biedronka' or sn == 'lidl' or sn == 'kaufland' or sn == 'carrefour' or sn == 'auchan' or sn == 'dino' or sn == 'netto' ? sn : 'generic')}">
+                    <span class="store-logo" th:classappend="'store-' + ${slug}"></span>
+                    <span class="store-name" th:text="${d.storeName}">Store</span>
+                </span>
+                <p class="deal-meta">
+                    <span th:if="${d.pricePerUnit != null}"
+                          th:text="${#numbers.formatDecimal(d.pricePerUnit, 1, 2)} + ' zł/unit · '"></span><span
+                        th:text="'by ' + ${mine ? 'you' : d.author.username}"></span>
+                </p>
+                <p class="deal-progress"
+                   th:text="${d.claimedUnits()} + ' of ' + ${d.totalUnits} + ' units claimed · ' + ${remaining} + ' left'"></p>
+                <div class="deal-bar" aria-hidden="true">
+                    <span th:style="'width:' + ${d.totalUnits > 0 ? d.claimedUnits() * 100 / d.totalUnits : 0} + '%'"></span>
+                </div>
+            </div>
+            <p style="margin-top:20px"><a class="btn btn-solid" href="/deals">Open all deals</a></p>
+        </div>
+
+        <div class="empty" th:if="${deals != null and deals.isEmpty()}">
+            <p class="empty-title">No deals yet</p>
+            <p>Be the first to post a bulk deal for your building.</p>
+            <p style="margin-top:18px"><a class="btn btn-solid" href="/deals">Post a deal</a></p>
+        </div>
+
+        <div class="empty" th:if="${deals == null}">
+            <p class="empty-title">You're in</p>
+            <p>Offers from your neighbors live on the deals page.</p>
+            <p style="margin-top:18px"><a class="btn btn-solid" href="/deals">Open deals</a></p>
+        </div>
+    </div>
+</section>
+
+<section id="chats">
+    <p class="sec-label">Community</p>
+    <h2>Your building, your chat</h2>
+    <div class="grid3">
+        <div class="cell-card p-bottle">
+            <div class="prod-label">
+                <span class="num">A</span>
+                <h3>Your building only</h3>
+                <p>You register in your own building and see offers from your neighbors — no one else.</p>
+            </div>
+        </div>
+        <div class="cell-card p-apple">
+            <div class="prod-label">
+                <span class="num">B</span>
+                <h3>Built-in chat</h3>
+                <p>Agree on the purchase, the pickup time, and the place right in the building chat.</p>
+            </div>
+        </div>
+        <div class="cell-card p-can">
+            <div class="prod-label">
+                <span class="num">C</span>
+                <h3>Savings, no surplus</h3>
+                <p>Bulk-level discount at home — with exactly as much as you actually need.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta" th:if="${session.user == null}">
+    <h2>Move in</h2>
+    <p>Create an account and find your building.</p>
+    <a class="btn btn-solid" href="/register">Sign up</a>
+</section>
+<section class="cta" th:unless="${session.user == null}">
+    <h2>Welcome home</h2>
+    <p>See what your neighbors are splitting today.</p>
+    <a class="btn btn-solid" href="/deals">Go to deals</a>
+</section>
+
+<footer>
+    <div class="footer-inner">
+        <a class="logo" href="/">House</a>
+        <ul class="footer-links">
+            <li><a href="#how">How it works</a></li>
+            <li><a th:href="${session.user == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
+            <li><a href="#chats">Chats</a></li>
+            <li th:if="${session.user == null}"><a href="/register">Sign up</a></li>
+            <li th:unless="${session.user == null}"><a href="/account">My account</a></li>
+        </ul>
+        <p class="footer-copy">© 2026 House. Neighbors who split the deals.</p>
+    </div>
+</footer>
+
+</body>
+</html>

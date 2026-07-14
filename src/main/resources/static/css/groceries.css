@@ -1,0 +1,26 @@
+.groceries {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.groceries svg {
+    position: absolute;
+    top: -90px;
+    height: auto;
+}
+.groceries-fixed { position: fixed; z-index: 0; }
+nav { position: relative; z-index: 2; }
+.account-main, .chat-main { position: relative; z-index: 1; }
+.fall-a { animation: fall-a linear infinite; }
+.fall-b { animation: fall-b linear infinite; }
+@keyframes fall-a {
+    from { transform: translateY(0) rotate(-12deg); }
+    to   { transform: translateY(115vh) rotate(335deg); }
+}
+@keyframes fall-b {
+    from { transform: translateY(0) rotate(10deg); }
+    to   { transform: translateY(115vh) rotate(-345deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .groceries { display: none; }
+}
