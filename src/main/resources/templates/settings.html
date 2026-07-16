@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings — House</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/groceries.css">
+    <link rel="stylesheet" href="/css/account.css">
+    <link rel="stylesheet" href="/css/deals.css">
+</head>
+<body>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <div th:replace="~{fragments/nav :: menu}"></div>
+</nav>
+
+<div th:replace="~{fragments/groceries :: groceries}"></div>
+
+<main class="account-main settings-page">
+    <a class="back-link" href="/account">← Back to my account</a>
+    <p class="sec-label">Settings</p>
+    <p class="auth-error" th:if="${param.error}">Couldn't save that — please try again
+        (a username or email might be taken, or the current password is wrong).</p>
+
+    <div class="settings-wrap open">
+        <nav class="tabs-side">
+            <button type="button" class="tab active" data-tab="personal">Personal info</button>
+            <button type="button" class="tab" data-tab="account">Email &amp; username</button>
+            <button type="button" class="tab" data-tab="password">Password</button>
+            <button type="button" class="tab" data-tab="building">Building</button>
+        </nav>
+
+        <div class="settings-content">
+        <section class="tab-body active" id="tab-personal">
+            <h2>Personal info</h2>
+
+            <form method="post" action="/account/avatar" enctype="multipart/form-data" class="avatar-row">
+                <div class="avatar-wrap avatar-wrap-sm">
+                    <img class="account-avatar" th:if="${hasAvatar}" src="/account/avatar" alt="Your avatar">
+                    <svg class="account-avatar" th:unless="${hasAvatar}" viewBox="0 0 60 74" aria-hidden="true">
+                        <rect x="0" y="0" width="60" height="74" fill="#262626"/>
+                        <rect x="10" y="7" width="40" height="51" fill="#b8b1a2"/>
+                        <rect x="13.5" y="10.5" width="33" height="44" fill="#413e37"/>
+                        <path d="M17 59 q0 -15 13 -15 q13 0 13 15 z" fill="#b0603f"/>
+                        <circle cx="30" cy="33" r="11.5" fill="#e8b98a"/>
+                        <path d="M19.6 28 a11.5 11.5 0 0 1 20.8 0 z" fill="#1c1c1c"/>
+                        <circle cx="25.8" cy="33" r="1.7" fill="#1c1c1c"/>
+                        <circle cx="34.2" cy="33" r="1.7" fill="#1c1c1c"/>
+                        <path d="M27.4 38.5 q2.6 2.2 5.2 0" stroke="#1c1c1c" stroke-width="1.4"
+                              fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <label class="btn photo-label">
+                    <input type="file" name="avatar" accept="image/*" onchange="this.form.submit()" hidden>
+                    Change photo
+                </label>
+            </form>
+
+            <form method="post" action="/account/profile">
+                <div class="auth-field">
+                    <label for="s-fullname">Full name</label>
+                    <input id="s-fullname" name="fullName" th:value="${fullName}"
+                           maxlength="120" placeholder="e.g. Jan Kowalski">
+                </div>
+                <div class="auth-field">
+                    <label for="s-phone">Phone</label>
+                    <input id="s-phone" name="phone" th:value="${phone}"
+                           maxlength="40" placeholder="+48 …">
+                </div>
+                <div class="field-pair">
+                    <div class="auth-field">
+                        <label for="s-floor">Floor</label>
+                        <input id="s-floor" name="floor" th:value="${floor}"
+                               maxlength="10" placeholder="e.g. 3">
+                    </div>
+                    <div class="auth-field">
+                        <label for="s-apartment">Apartment number</label>
+                        <input id="s-apartment" name="apartment" th:value="${apartment}"
+                               maxlength="10" placeholder="e.g. 12">
+                    </div>
+                </div>
+                <div class="auth-field">
+                    <label for="s-bio">About</label>
+                    <textarea id="s-bio" name="bio" rows="3" maxlength="500"
+                              placeholder="A few words about you" th:text="${bio}"></textarea>
+                </div>
+                <button class="btn btn-solid" type="submit">Save info</button>
+            </form>
+        </section>
+
+        <section class="tab-body" id="tab-account">
+            <h2>Email &amp; username</h2>
+            <form method="post" action="/account/username" class="settings-row-form">
+                <div class="auth-field">
+                    <label for="s-username">Username</label>
+                    <input id="s-username" name="username" th:value="${username}"
+                           required maxlength="60" autocomplete="off">
+                </div>
+                <button class="btn" type="submit">Save</button>
+            </form>
+            <form method="post" action="/account/email" class="settings-row-form">
+                <div class="auth-field">
+                    <label for="s-email">Email</label>
+                    <input id="s-email" type="email" name="email" th:value="${email}"
+                           required maxlength="180" autocomplete="off">
+                </div>
+                <button class="btn" type="submit">Save</button>
+            </form>
+        </section>
+
+        <section class="tab-body" id="tab-password">
+            <h2>Password</h2>
+            <form method="post" action="/account/password">
+                <div class="auth-field">
+                    <label for="s-cur">Current password</label>
+                    <input id="s-cur" type="password" name="currentPassword"
+                           required autocomplete="current-password">
+                </div>
+                <div class="auth-field">
+                    <label for="s-new">New password</label>
+                    <input id="s-new" type="password" name="newPassword"
+                           required autocomplete="new-password">
+                </div>
+                <button class="btn btn-solid" type="submit">Change password</button>
+            </form>
+        </section>
+
+        <section class="tab-body" id="tab-building">
+            <h2>Building</h2>
+            <p class="settings-current" th:if="${buildingAddress != null}" th:text="${buildingAddress}">address</p>
+            <p class="settings-current dd-muted" th:if="${buildingAddress == null}">
+                Not linked yet — find your address to see your neighbours' deals.</p>
+            <button class="btn btn-solid" type="button" id="addr-toggle"
+                    th:text="${buildingAddress == null} ? 'Add address' : 'Change address'">Add address</button>
+
+            <form method="post" action="/account/address" id="addr-form" class="addr-form" hidden>
+                <div class="auth-field addr-box">
+                    <label for="addr-input">Address</label>
+                    <div class="addr-input-wrap">
+                        <input id="addr-input" type="text" autocomplete="off"
+                               placeholder="Miasto, ulica numer — np. Kraków, Długa 5">
+                        <ul id="addr-list" class="addr-list" hidden></ul>
+                    </div>
+                    <p class="addr-hint">Type the city, street and house number with Polish
+                        letters (ł, ó, ż…), e.g. “Kraków, Długa 5”, then pick your
+                        building from the list.</p>
+                </div>
+                <input type="hidden" name="osmId">
+                <input type="hidden" name="label">
+                <input type="hidden" name="city">
+                <input type="hidden" name="street">
+                <input type="hidden" name="number">
+                <input type="hidden" name="postalCode">
+                <input type="hidden" name="lat">
+                <input type="hidden" name="lon">
+                <button class="btn btn-solid" type="submit" id="addr-save" disabled>Save address</button>
+            </form>
+        </section>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.querySelectorAll('.tabs-side .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tabs-side .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-body').forEach(b => b.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+</script>
+<script src="/js/main.js" defer></script>
+<script src="/js/address-autocomplete.js" defer></script>
+</body>
+</html>
