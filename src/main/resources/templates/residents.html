@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Neighbours — House</title>
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/groceries.css">
+    <link rel="stylesheet" href="/css/residents.css">
+</head>
+<body>
+
+<nav>
+    <a class="logo" href="/">House</a>
+    <div th:replace="~{fragments/nav :: menu}"></div>
+</nav>
+
+<div th:replace="~{fragments/groceries :: groceries}"></div>
+
+<main class="residents-main">
+    <p class="sec-label">Neighbours</p>
+    <p class="auth-error" th:if="${param.error}">You can only view neighbours from your own building.</p>
+    <h1 class="residents-title">Who lives in House</h1>
+    <p class="residents-sub" th:if="${buildingAddress != null}" th:text="${buildingAddress}">street, city</p>
+
+    <div class="empty" th:if="${buildingAddress == null}">
+        <p class="empty-title">No building yet</p>
+        <p>Link your address first — then you'll see everyone who lives in your building.</p>
+        <p style="margin-top:18px"><a class="btn btn-solid" href="/account/settings">Add address</a></p>
+    </div>
+
+    <div class="empty" th:if="${buildingAddress != null and neighbours.isEmpty()}">
+        <p class="empty-title">Just you for now</p>
+        <p>Nobody else from your building has joined yet. Invite your neighbours!</p>
+    </div>
+
+    <div class="residents-grid" th:if="${!neighbours.isEmpty()}">
+        <a class="resident-card" th:each="n : ${neighbours}" th:href="@{'/residents/' + ${n.id}}">
+            <div class="resident-avatar-wrap">
+                <img class="resident-avatar" th:if="${n.hasAvatar()}"
+                     th:src="@{'/residents/' + ${n.id} + '/avatar'}" alt="" loading="lazy">
+                <svg class="resident-avatar" th:unless="${n.hasAvatar()}" viewBox="0 0 60 74" aria-hidden="true">
+                    <rect x="0" y="0" width="60" height="74" fill="#262626"/>
+                    <rect x="10" y="7" width="40" height="51" fill="#b8b1a2"/>
+                    <rect x="13.5" y="10.5" width="33" height="44" fill="#413e37"/>
+                    <path d="M17 59 q0 -15 13 -15 q13 0 13 15 z" fill="#b0603f"/>
+                    <circle cx="30" cy="33" r="11.5" fill="#e8b98a"/>
+                    <path d="M19.6 28 a11.5 11.5 0 0 1 20.8 0 z" fill="#1c1c1c"/>
+                    <circle cx="25.8" cy="33" r="1.7" fill="#1c1c1c"/>
+                    <circle cx="34.2" cy="33" r="1.7" fill="#1c1c1c"/>
+                    <path d="M27.4 38.5 q2.6 2.2 5.2 0" stroke="#1c1c1c" stroke-width="1.4"
+                          fill="none" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="resident-info">
+                <h3 th:text="${n.fullName != null ? n.fullName : n.username}">Name</h3>
+                <p class="resident-handle" th:text="'@' + ${n.username}">@username</p>
+                <p class="resident-meta">
+                    <span th:if="${n.floor != null}" th:text="'Floor ' + ${n.floor}">Floor 3</span>
+                    <span th:if="${n.apartment != null}" th:text="'Apt ' + ${n.apartment}">Apt 12</span>
+                    <span class="dd-muted" th:if="${n.floor == null and n.apartment == null}">No flat info</span>
+                </p>
+            </div>
+        </a>
+    </div>
+</main>
+
+<script src="/js/main.js" defer></script>
+</body>
+</html>
