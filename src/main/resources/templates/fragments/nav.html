@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div class="nav-menu" th:fragment="menu">
+    <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false">
+        <span class="menu-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <div class="menu-dropdown" hidden>
+        <a href="/">Main page</a>
+        <a href="/deals">Deals</a>
+        <a href="/residents">Neighbours</a>
+        <a href="/building/chat">Building chat</a>
+        <a href="/account">My account</a>
+        <a href="/account/settings">Settings</a>
+        <form method="post" action="/logout">
+            <button type="submit">Log out</button>
+        </form>
+    </div>
+    <script th:inline="none">
+        (function () {
+            var wrap = document.currentScript.closest('.nav-menu');
+            var btn = wrap.querySelector('.menu-btn');
+            var dd = wrap.querySelector('.menu-dropdown');
+            function close() {
+                dd.hidden = true;
+                wrap.classList.remove('open');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+            function open() {
+                dd.hidden = false;
+                wrap.classList.add('open');
+                btn.setAttribute('aria-expanded', 'true');
+            }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                if (dd.hidden) { open(); } else { close(); }
+            });
+            document.addEventListener('click', function (e) {
+                if (!wrap.contains(e.target)) { close(); }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') { close(); }
+            });
+        })();
+    </script>
+</div>
+
+</body>
+</html>
