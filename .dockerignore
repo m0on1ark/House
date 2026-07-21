@@ -1,0 +1,11 @@
+target/
+.git/
+.gitignore
+.gitattributes
+.claude/
+.idea/
+*.iml
+HELP.md
+Dockerfile
+compose.yaml
+.dockerignore
