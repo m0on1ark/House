@@ -210,7 +210,7 @@ html.intro-playing .intro {
     pointer-events: none;
     background: #d9772f;
     background: linear-gradient(158deg, #e58f3d 0%, #c9611f 100%);
-    animation: intro-fade .8s ease 2s forwards;
+    animation: intro-fade .8s ease 2.7s forwards;
 }
 html.intro-playing .skyline {
     position: relative;
@@ -220,6 +220,44 @@ html.intro-playing .skyline {
     to { opacity: 0; }
 }
 
+.intro-tagline {
+    position: absolute;
+    top: 84px;
+    left: 0;
+    right: 0;
+    margin: 0;
+    text-align: center;
+    font-style: italic;
+    font-family: "Segoe Script", "Bradley Hand", "Snell Roundhand", "Brush Script MT", cursive;
+    font-size: clamp(19px, 4.2vw, 32px);
+    color: #fbf6ee;
+    text-shadow: 0 3px 16px rgba(90, 38, 6, .38);
+}
+.intro-type { position: relative; display: inline-block; }
+.intro-type-text {
+    display: inline-block;
+    white-space: nowrap;
+    clip-path: inset(0 100% 0 0);
+    animation: intro-write 1.6s steps(20, end) .3s both;
+}
+.intro-type::after {
+    content: "";
+    position: absolute;
+    top: 4%;
+    bottom: 4%;
+    left: 0;
+    width: 2px;
+    background: #fbf6ee;
+    animation: intro-caret 1.6s steps(20, end) .3s both;
+}
+@keyframes intro-write {
+    from { clip-path: inset(0 100% 0 0); }
+    to   { clip-path: inset(0 0 0 0); }
+}
+@keyframes intro-caret {
+    from { left: 0; }
+    to   { left: 100%; }
+}
 .intro-groceries {
     position: absolute;
     inset: 0;
@@ -234,7 +272,7 @@ html.intro-playing .skyline {
     height: 42px;
     margin: -21px 0 0 -21px;
     background: var(--img) center / contain no-repeat;
-    animation: intro-item-pop .45s ease var(--d) both;
+    animation: intro-item-pop .45s ease calc(var(--d) + .7s) both;
 }
 .intro-item::before,
 .intro-item::after {
@@ -251,7 +289,7 @@ html.intro-playing .skyline {
     background: conic-gradient(#ff5a5f, #ffd23f, #3fb984, #4d9be6, #b06fd6, #ff924d, #ff5a5f);
     opacity: 0;
     transform: scale(0);
-    animation: intro-burst .5s ease-out var(--d) both;
+    animation: intro-burst .5s ease-out calc(var(--d) + .7s) both;
 }
 .intro-item::after {
     width: 6px;
@@ -263,7 +301,7 @@ html.intro-playing .skyline {
         -17px 0 0 #ffd23f, -12px -12px 0 #3fb984;
     opacity: 0;
     transform: scale(.2);
-    animation: intro-particles .55s ease-out var(--d) both;
+    animation: intro-particles .55s ease-out calc(var(--d) + .7s) both;
 }
 @keyframes intro-item-pop {
     0%   { transform: rotate(var(--r, 0deg)) scale(1);   opacity: 1; }
@@ -284,4 +322,45 @@ html.intro-playing .skyline {
 @media (prefers-reduced-motion: reduce) {
     html.intro-playing .intro { display: none; }
     html.intro-playing .skyline { position: static; z-index: auto; }
+}
+
+.bletter i.b::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 55% at 50% 45%, rgba(255, 206, 120, .9), rgba(255, 206, 120, 0) 70%);
+    opacity: 0;
+    mix-blend-mode: screen;
+    transition: opacity .8s ease;
+    pointer-events: none;
+}
+.bletter i.b.win-lit::after { opacity: 1; }
+
+.shelf {
+    overflow: hidden;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    background: #f4f2ed;
+    padding: 15px 0;
+}
+.shelf-track {
+    display: flex;
+    width: max-content;
+    animation: shelf-move 34s linear infinite;
+}
+.shelf-item {
+    flex: none;
+    width: 46px;
+    height: 54px;
+    margin-right: 64px;
+    background: var(--img) center / contain no-repeat;
+}
+@keyframes shelf-move {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+.shelf:hover .shelf-track { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+    .shelf-track { animation: none; }
 }

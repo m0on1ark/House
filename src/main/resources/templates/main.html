@@ -16,6 +16,7 @@
 <body>
 
 <div class="intro" id="intro" aria-hidden="true">
+    <p class="intro-tagline"><span class="intro-type"><span class="intro-type-text">save your money with</span></span></p>
     <div class="intro-groceries">
         <span class="intro-item" style="--x:8%;--y:16%;--img:var(--g-apple);--d:.10s;--r:-12deg"></span>
         <span class="intro-item" style="--x:20%;--y:44%;--img:var(--g-bread);--d:.55s;--r:8deg"></span>
@@ -202,6 +203,31 @@
     <a class="btn btn-solid" href="/register" th:if="${session.user == null}">Join your building</a>
     <a class="btn btn-solid" href="/deals" th:unless="${session.user == null}">Open your building's deals</a>
 </header>
+
+<div class="shelf" aria-hidden="true">
+    <div class="shelf-track">
+        <span class="shelf-item" style="--img:var(--g-apple)"></span>
+        <span class="shelf-item" style="--img:var(--g-bread)"></span>
+        <span class="shelf-item" style="--img:var(--g-cheese)"></span>
+        <span class="shelf-item" style="--img:var(--g-milk)"></span>
+        <span class="shelf-item" style="--img:var(--g-bottle)"></span>
+        <span class="shelf-item" style="--img:var(--g-can)"></span>
+        <span class="shelf-item" style="--img:var(--g-apple)"></span>
+        <span class="shelf-item" style="--img:var(--g-cheese)"></span>
+        <span class="shelf-item" style="--img:var(--g-bottle)"></span>
+        <span class="shelf-item" style="--img:var(--g-bread)"></span>
+        <span class="shelf-item" style="--img:var(--g-apple)"></span>
+        <span class="shelf-item" style="--img:var(--g-bread)"></span>
+        <span class="shelf-item" style="--img:var(--g-cheese)"></span>
+        <span class="shelf-item" style="--img:var(--g-milk)"></span>
+        <span class="shelf-item" style="--img:var(--g-bottle)"></span>
+        <span class="shelf-item" style="--img:var(--g-can)"></span>
+        <span class="shelf-item" style="--img:var(--g-apple)"></span>
+        <span class="shelf-item" style="--img:var(--g-cheese)"></span>
+        <span class="shelf-item" style="--img:var(--g-bottle)"></span>
+        <span class="shelf-item" style="--img:var(--g-bread)"></span>
+    </div>
+</div>
 
 <section id="how">
     <p class="sec-label">Process</p>
