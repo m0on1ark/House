@@ -31,7 +31,7 @@ public class UserController {
     public String showMainPage(HttpSession session, Model model){
         User user = (User) session.getAttribute("user");
         if (user != null){
-            model.addAttribute("deals", dealService.findForUser(user.getId()));
+            model.addAttribute("deals", dealService.findForUser(user.getId(), 0));
         }
         return "main";
     }

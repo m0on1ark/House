@@ -91,9 +91,8 @@ public class DealService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
         Deal deal = dealRepository.findById(dealId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
-        if (claimer.getBuilding() == null
-                || claimer.getBuilding().getId() != deal.getBuilding().getId()){
-            throw new IllegalArgumentException("Not your house");
+        if (claimer.getBuilding() == null){
+            throw new IllegalArgumentException("link a building first");
         }
         if (claimer.getId() == deal.getAuthor().getId()){
             throw new IllegalArgumentException("author has his share");
@@ -131,13 +130,52 @@ public class DealService {
         }
     }
 
-    public List<Deal> findForUser(long userId){
+    public List<Deal> findForUser(long userId, double radiusKm){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
-        if (user.getBuilding() == null){
+        Building home = user.getBuilding();
+        if (home == null){
             return List.of();
         }
-        return dealRepository.findByBuildingIdOrderByCreatedAtDesc(user.getBuilding().getId());
+        return dealRepository.findAllByOrderByCreatedAtDesc().stream()
+                .filter(d -> {
+                    Building b = d.getBuilding();
+                    if (b.getId() == home.getId()){
+                        return true;
+                    }
+                    if (radiusKm <= 0){
+                        return false;
+                    }
+                    if (home.getLat() == null || home.getLon() == null
+                            || b.getLat() == null || b.getLon() == null){
+                        return false;
+                    }
+                    return distanceKm(home, b) <= radiusKm;
+                })
+                .toList();
+    }
+
+    public long homeBuildingId(long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+        return user.getBuilding() != null ? user.getBuilding().getId() : -1L;
+    }
+
+    public Building homeBuilding(long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid"))
+                .getBuilding();
+    }
+
+    private static double distanceKm(Building a, Building b){
+        double earthRadius = 6371.0;
+        double dLat = Math.toRadians(b.getLat() - a.getLat());
+        double dLon = Math.toRadians(b.getLon() - a.getLon());
+        double lat1 = Math.toRadians(a.getLat());
+        double lat2 = Math.toRadians(b.getLat());
+        double h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return 2 * earthRadius * Math.asin(Math.sqrt(h));
     }
 
 }

@@ -44,7 +44,7 @@
 .deal-form {
     margin-top: 16px;
     border: 1px solid var(--ink);
-    background: #f4f2ed;
+    background: var(--surface);
     padding: 24px;
     text-align: left;
 }
@@ -57,7 +57,7 @@
 .deal-card {
     position: relative;
     border: 1px solid var(--ink);
-    background: #f4f2ed;
+    background: var(--surface);
     padding: 20px 24px;
     margin-bottom: 16px;
     overflow: hidden;
@@ -75,7 +75,7 @@
     border: 1px solid var(--ink);
     margin-bottom: 16px;
     padding: 6px;
-    background: #f4f2ed;
+    background: var(--surface);
     cursor: zoom-in;
 }
 
@@ -173,4 +173,130 @@
     color: var(--ink);
     border: 1px solid var(--ink);
     background: var(--bg);
+}
+
+.radius-panel {
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    margin-bottom: 22px;
+}
+.radius-map {
+    height: 240px;
+    width: 100%;
+    border-bottom: 1px solid var(--ink);
+    background: var(--surface);
+    z-index: 0;
+}
+.radius-note {
+    padding: 18px;
+    color: var(--muted);
+    font-size: 14px;
+}
+.radius-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 18px;
+}
+.radius-row label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.radius-row input[type="range"] {
+    flex: 1;
+    min-width: 160px;
+    accent-color: #b0603f;
+}
+.radius-row .btn { flex: none; }
+[data-theme="dark"] .radius-map .leaflet-tile {
+    filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.95);
+}
+[data-theme="dark"] .radius-map .leaflet-container { background: #2a2825; }
+.radius-out {
+    min-width: 130px;
+    text-align: right;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+}
+.deal-where {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 6px;
+}
+.deal-faraway {
+    flex: none;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #b0603f;
+    border: 1px solid #b0603f;
+    padding: 2px 7px;
+}
+
+.deals-main { position: relative; z-index: 1; }
+nav { position: sticky; top: 0; z-index: 10; }
+
+.deals-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.deals-head h2 { margin-bottom: 0; }
+.deals-tag {
+    flex: none;
+    width: 46px;
+    height: 46px;
+    transform-origin: 34% 30%;
+    filter: drop-shadow(2px 3px 0 rgba(28, 28, 28, .15));
+    animation: tag-sway 4s ease-in-out infinite;
+}
+@keyframes tag-sway {
+    0%, 100% { transform: rotate(-3deg); }
+    50%      { transform: rotate(3deg); }
+}
+.empty-basket {
+    width: 88px;
+    height: auto;
+    display: block;
+    margin: 0 auto 18px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .deals-tag { animation: none; }
+}
+
+.deals-decor {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+.deals-decor .dg {
+    position: absolute;
+    width: var(--w, 80px);
+    height: var(--w, 80px);
+    background: var(--img) center / contain no-repeat;
+    opacity: .8;
+    animation: dg-bob var(--dur, 7s) ease-in-out infinite;
+    animation-delay: var(--dl, 0s);
+}
+@keyframes dg-bob {
+    0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+    50%      { transform: translateY(-14px) rotate(var(--r, 0deg)); }
+}
+@media (max-width: 1080px) {
+    .deals-decor { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .deals-decor .dg { animation: none; transform: rotate(var(--r, 0deg)); }
 }

@@ -7,7 +7,7 @@
 .account-card {
     position: relative;
     border: 1px solid var(--ink);
-    background: #f4f2ed;
+    background: var(--surface);
     padding: 40px;
     animation: card-in .55s cubic-bezier(.2, .7, .3, 1) both;
 }
@@ -50,7 +50,7 @@
 }
 img.account-avatar {
     object-fit: cover;
-    background: #f4f2ed;
+    background: var(--surface);
 }
 .avatar-form { margin: 0; }
 .avatar-edit {
@@ -64,7 +64,7 @@ img.account-avatar {
     font-weight: 700;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: #f4f2ed;
+    color: var(--surface);
     background: rgba(28, 28, 28, .74);
     cursor: pointer;
 }
@@ -81,7 +81,7 @@ img.account-avatar {
     display: none;
     grid-template-columns: 220px 1fr;
     border: 1px solid var(--ink);
-    background: #f4f2ed;
+    background: var(--surface);
 }
 .settings-wrap.open { display: grid; }
 .tabs-side {

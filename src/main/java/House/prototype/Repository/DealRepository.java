@@ -9,4 +9,6 @@ public interface DealRepository extends JpaRepository<Deal, Long> {
     List<Deal> findByBuildingIdOrderByCreatedAtDesc(long buildingId);
 
     List<Deal> findByAuthorIdOrderByCreatedAtDesc(long authorId);
+
+    List<Deal> findAllByOrderByCreatedAtDesc();
 }

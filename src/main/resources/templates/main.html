@@ -7,6 +7,7 @@
     <script th:inline="none">
         try { if (!sessionStorage.getItem('introSeen')) document.documentElement.classList.add('intro-playing'); } catch (e) {}
     </script>
+    <th:block th:replace="~{fragments/theme :: init}"></th:block>
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="/css/deals.css">
@@ -14,6 +15,13 @@
     <script src="/js/lightbox.js" defer></script>
 </head>
 <body>
+
+<div class="sky-decor" aria-hidden="true">
+    <span class="sky-sun"></span>
+    <span class="sky-stars"></span>
+</div>
+
+<div th:replace="~{fragments/receipts :: tapes}"></div>
 
 <div class="intro" id="intro" aria-hidden="true">
     <p class="intro-tagline"><span class="intro-type"><span class="intro-type-text">save your money with</span></span></p>

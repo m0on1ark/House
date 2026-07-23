@@ -7,7 +7,7 @@
 .chat-box {
     margin-top: 26px;
     border: 1px solid var(--ink);
-    background: #f4f2ed;
+    background: var(--surface);
 }
 .chat-messages {
     max-height: 420px;

@@ -34,7 +34,7 @@ nav {
     justify-content: space-between;
     padding: 16px 48px;
     border-bottom: 1px solid var(--ink);
-    background: rgba(237, 235, 230, .78);
+    background: var(--nav-bg);
     -webkit-backdrop-filter: blur(10px) saturate(1.1);
     backdrop-filter: blur(10px) saturate(1.1);
     position: sticky;
@@ -125,7 +125,7 @@ button.btn { cursor: pointer; font-family: inherit; font-size: 13px; }
     transform: scale(1);
 }
 
-.nav-menu { position: relative; }
+.nav-menu { position: relative; display: inline-flex; align-items: center; gap: 10px; }
 .menu-btn {
     width: 44px;
     height: 44px;
@@ -323,4 +323,126 @@ footer .logo { color: #fff; }
         animation-iteration-count: 1 !important;
         transition-duration: .001ms !important;
     }
+}
+
+:root {
+    --surface: #f4f2ed;
+    --surface-2: #e7e3da;
+    --nav-bg: rgba(237, 235, 230, .78);
+}
+:root[data-theme="dark"] {
+    --bg: #1a1917;
+    --ink: #ece7de;
+    --muted: #9a9488;
+    --line: #37342e;
+    --bld: #4c4842;
+    --bld-alt: #59554d;
+    --surface: #24221f;
+    --surface-2: #2e2b27;
+    --nav-bg: rgba(22, 21, 19, .74);
+}
+
+[data-theme="dark"] footer { background: #100f0d; }
+[data-theme="dark"] .btn:hover,
+[data-theme="dark"] .btn:focus-visible {
+    background: var(--surface-2);
+    text-shadow: none;
+}
+[data-theme="dark"] .prod-label { background: var(--surface); }
+[data-theme="dark"] .resident-card:hover,
+[data-theme="dark"] .resident-card:focus-visible { background: var(--surface-2); }
+[data-theme="dark"] .addr-list li:hover,
+[data-theme="dark"] .addr-list li.active,
+[data-theme="dark"] .chat-attach:hover { background: var(--surface-2); }
+[data-theme="dark"] .cell-card { --card-tint: #262420; }
+[data-theme="dark"] .cell-card:hover { box-shadow: 6px 9px 0 rgba(0, 0, 0, .35); }
+[data-theme="dark"] .empty { border-color: #4a4640; }
+[data-theme="dark"] .auth-error { color: #e0a58c; }
+
+/* ===== Curtain theme toggle (a little window with drapes; open = light, closed = dark) ===== */
+.curtain-toggle {
+    appearance: none;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 6px;
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .25s ease, border-color .25s ease;
+}
+.curtain-window {
+    position: relative;
+    display: block;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    border: 1px solid var(--ink);
+    border-radius: 3px 3px 0 0;
+    background: #1b1b1b;
+}
+.curtain-sky {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(#bfe0f2 0%, #eaf4ef 100%);
+    transition: background .45s ease;
+}
+.curtain-sky::after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f2c14e;
+    box-shadow: 0 0 7px #f4cf77;
+    transition: background .45s ease, box-shadow .45s ease;
+}
+.curtain-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 62%;
+    background-image: repeating-linear-gradient(90deg, #b0603f 0, #b0603f 2px, #9c5030 2px, #9c5030 4px);
+    transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+}
+.curtain-panel.left  { left: 0;  transform: translateX(-74%); }
+.curtain-panel.right { right: 0; transform: translateX(74%); }
+.curtain-rod {
+    position: absolute;
+    top: -1px;
+    left: -2px;
+    right: -2px;
+    height: 3px;
+    background: var(--ink);
+}
+.curtain-toggle.closed .curtain-panel.left,
+.curtain-toggle.closed .curtain-panel.right { transform: translateX(0); }
+.curtain-toggle.closed .curtain-sky { background: linear-gradient(#243b55 0%, #0e1626 100%); }
+.curtain-toggle.closed .curtain-sky::after {
+    background: #d3d9e6;
+    box-shadow: 0 0 7px #aab3c9;
+}
+.curtain-toggle:hover,
+.curtain-toggle:focus-visible { border-color: #b0603f; }
+
+/* ===== Receipt decorations along the page edges (main, account) ===== */
+.receipt-tape {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 150px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .92;
+    filter: drop-shadow(2px 3px 2px rgba(28, 28, 28, .16));
+}
+.tape-left  { left: -18px; }
+.tape-right { right: -18px; }
+@media (max-width: 1200px) {
+    .receipt-tapes { display: none; }
 }

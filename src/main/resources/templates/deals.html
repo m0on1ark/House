@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Deals — House</title>
+    <th:block th:replace="~{fragments/theme :: init}"></th:block>
     <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="stylesheet" href="/css/deals.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/js/lightbox.js" defer></script>
 </head>
 <body>
@@ -15,12 +18,86 @@
     <div th:replace="~{fragments/nav :: menu}"></div>
 </nav>
 
+<div class="deals-decor" aria-hidden="true">
+    <span class="dg" style="--img:var(--g-milk);   left:3%;  top:9%;  --w:96px;  --r:-9deg;  --dur:7.5s; --dl:-1s"></span>
+    <span class="dg" style="--img:var(--g-apple);  left:6%;  top:29%; --w:74px;  --r:11deg;  --dur:6.2s; --dl:-3s"></span>
+    <span class="dg" style="--img:var(--g-bread);  left:2%;  top:50%; --w:108px; --r:-6deg;  --dur:8.4s; --dl:-5s"></span>
+    <span class="dg" style="--img:var(--g-can);    left:7%;  top:70%; --w:82px;  --r:8deg;   --dur:7s;   --dl:-2s"></span>
+    <span class="dg" style="--img:var(--g-cheese); left:4%;  top:88%; --w:90px;  --r:-12deg; --dur:6.8s; --dl:-4s"></span>
+    <span class="dg" style="--img:var(--g-bottle); left:90%; top:12%; --w:80px;  --r:10deg;  --dur:7.8s; --dl:-2.5s"></span>
+    <span class="dg" style="--img:var(--g-cheese); left:93%; top:33%; --w:92px;  --r:-8deg;  --dur:6.5s; --dl:-1.5s"></span>
+    <span class="dg" style="--img:var(--g-milk);   left:88%; top:55%; --w:100px; --r:7deg;   --dur:8.2s; --dl:-3.5s"></span>
+    <span class="dg" style="--img:var(--g-apple);  left:92%; top:75%; --w:78px;  --r:-11deg; --dur:6.9s; --dl:-5s"></span>
+    <span class="dg" style="--img:var(--g-bread);  left:87%; top:91%; --w:104px; --r:9deg;   --dur:7.3s; --dl:-2s"></span>
+</div>
+
 <main class="deals-main">
     <p class="sec-label">Deals</p>
-    <h2>Your building's deals</h2>
+    <div class="deals-head">
+        <h2>Deals near you</h2>
+        <svg class="deals-tag" viewBox="0 0 64 64" aria-hidden="true">
+            <g transform="rotate(-15 32 32)">
+                <rect x="11" y="11" width="42" height="42" rx="8" fill="#b0603f"/>
+                <circle cx="21" cy="21" r="4" fill="var(--surface)"/>
+                <text x="35" y="45" font-family="Helvetica, Arial, sans-serif" font-size="26"
+                      font-weight="800" fill="#f7f3ec" text-anchor="middle">%</text>
+            </g>
+        </svg>
+    </div>
 
     <p class="auth-error" th:if="${param.error}">Couldn't do that — check the numbers
         (and make sure your building is linked in <a href="/account">your account</a>).</p>
+
+    <form class="radius-panel" method="get" action="/deals">
+        <div id="radius-map" class="radius-map" th:if="${homeLat != null}"
+             th:attr="data-lat=${homeLat},data-lon=${homeLon}"></div>
+        <p class="radius-note" th:if="${homeLat == null}">
+            Link your building address in <a href="/account/settings">settings</a> to use the map.</p>
+        <div class="radius-row">
+            <label for="radius">Show deals within</label>
+            <input type="range" id="radius" name="radius" min="0" max="10" step="0.5" th:value="${radius}">
+            <output id="radius-out" class="radius-out">My building only</output>
+            <button class="btn btn-solid" type="submit">Set radius</button>
+        </div>
+    </form>
+    <script>
+        (function () {
+            var r = document.getElementById('radius');
+            var out = document.getElementById('radius-out');
+            var el = document.getElementById('radius-map');
+            var map = null, circle = null, lat, lon;
+            function label(v) {
+                v = parseFloat(v);
+                if (v <= 0) return 'My building only';
+                return (Number.isInteger(v) ? v : v.toFixed(1)) + ' km';
+            }
+            function updateCircle() {
+                if (!circle || !map) return;
+                var km = parseFloat(r.value);
+                circle.setRadius(Math.max(km, 0) * 1000);
+                if (km > 0) map.fitBounds(circle.getBounds().pad(0.25));
+                else map.setView([lat, lon], 15);
+            }
+            function onInput() {
+                if (out) out.textContent = label(r.value);
+                updateCircle();
+            }
+            if (r) { onInput(); r.addEventListener('input', onInput); }
+            if (el && window.L) {
+                lat = parseFloat(el.dataset.lat);
+                lon = parseFloat(el.dataset.lon);
+                map = L.map(el, { scrollWheelZoom: false }).setView([lat, lon], 14);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    { maxZoom: 19, attribution: '© OpenStreetMap contributors' }).addTo(map);
+                L.circleMarker([lat, lon],
+                    { radius: 6, color: '#b0603f', fillColor: '#b0603f', fillOpacity: 1, weight: 2 }).addTo(map);
+                circle = L.circle([lat, lon],
+                    { radius: 0, color: '#b0603f', weight: 2, fillColor: '#b0603f', fillOpacity: .12 }).addTo(map);
+                updateCircle();
+                setTimeout(function () { map.invalidateSize(); updateCircle(); }, 150);
+            }
+        })();
+    </script>
 
     <div class="deal-new">
         <div class="deal-actions">
@@ -72,6 +149,13 @@
     </div>
 
     <div class="empty" th:if="${deals.isEmpty()}">
+        <svg class="empty-basket" viewBox="0 0 80 70" aria-hidden="true">
+            <path d="M9 24 h62 l-6 35 a5 5 0 0 1 -5 4 H20 a5 5 0 0 1 -5 -4 z"
+                  fill="none" stroke="#a8a49a" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M27 24 l7 -15 M53 24 l-7 -15" stroke="#a8a49a" stroke-width="2.5"
+                  fill="none" stroke-linecap="round"/>
+            <path d="M28 32 v22 M40 32 v22 M52 32 v22" stroke="#a8a49a" stroke-width="2" opacity=".55"/>
+        </svg>
         <p class="empty-title">Nothing here yet</p>
         <p>Spotted a bulk deal in a store? Be the first to post it.</p>
     </div>
@@ -92,6 +176,11 @@
             <span class="store-logo" th:classappend="'store-' + ${slug}"></span>
             <span class="store-name" th:text="${d.storeName}">Store</span>
         </span>
+        <p class="deal-where">
+            <span class="deal-addr"
+                  th:text="${(d.building.street != null ? d.building.street + ' ' + d.building.number : d.building.number) + ', ' + d.building.city}">street, city</span>
+            <span class="deal-faraway" th:if="${d.building.id != homeBuildingId}">other building</span>
+        </p>
         <p class="deal-meta">
             <span th:if="${d.pricePerUnit != null}"
                   th:text="${#numbers.formatDecimal(d.pricePerUnit, 1, 2)} + ' zł/unit · '"></span><span

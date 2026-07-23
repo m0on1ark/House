@@ -24,12 +24,25 @@ public class DealController {
     }
 
     @GetMapping("/deals")
-    public String findDeals(HttpSession session, Model model) {
+    public String findDeals(@RequestParam(required = false) Double radius,
+                            HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
             return "redirect:/login";
         }
-        model.addAttribute("deals", dealService.findForUser(user.getId()));
+        if (radius != null) {
+            session.setAttribute("dealRadius", radius);
+        }
+        Object stored = session.getAttribute("dealRadius");
+        double effectiveRadius = stored != null ? ((Number) stored).doubleValue() : 0.0;
+        model.addAttribute("deals", dealService.findForUser(user.getId(), effectiveRadius));
+        model.addAttribute("radius", effectiveRadius);
+        model.addAttribute("homeBuildingId", dealService.homeBuildingId(user.getId()));
+        House.prototype.Model.Building home = dealService.homeBuilding(user.getId());
+        if (home != null) {
+            model.addAttribute("homeLat", home.getLat());
+            model.addAttribute("homeLon", home.getLon());
+        }
         return "deals";
     }
     @PostMapping("/deals")

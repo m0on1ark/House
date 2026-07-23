@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<script th:fragment="init" th:inline="none">
+(function () {
+    var root = document.documentElement;
+    try {
+        var t = localStorage.getItem('theme');
+        if (t) root.setAttribute('data-theme', t);
+    } catch (e) {}
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var nav = document.querySelector('nav');
+        if (!nav || nav.querySelector('.curtain-toggle')) return;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'curtain-toggle';
+        btn.setAttribute('aria-label', 'Toggle light or dark theme');
+        btn.setAttribute('title', 'Light / dark');
+        btn.innerHTML =
+            '<span class="curtain-window">' +
+            '<span class="curtain-sky"></span>' +
+            '<span class="curtain-panel left"></span>' +
+            '<span class="curtain-panel right"></span>' +
+            '<span class="curtain-rod"></span>' +
+            '</span>';
+        function sync() {
+            btn.classList.toggle('closed', root.getAttribute('data-theme') === 'dark');
+        }
+        btn.addEventListener('click', function () {
+            var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            try { localStorage.setItem('theme', next); } catch (e) {}
+            sync();
+        });
+        sync();
+        var cluster = nav.lastElementChild;
+        if (cluster && cluster.tagName === 'DIV') cluster.insertBefore(btn, cluster.firstChild);
+        else nav.appendChild(btn);
+    });
+})();
+</script>
+</head>
+<body></body>
+</html>

@@ -11,7 +11,7 @@
     position: relative;
     z-index: 1;
     width: min(430px, 100%);
-    background: #f4f2ed;
+    background: var(--surface);
     border: 1px solid var(--ink);
     padding: 42px 40px;
     animation: card-in .55s cubic-bezier(.2, .7, .3, 1) both;
