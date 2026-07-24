@@ -106,6 +106,12 @@ backed by a managed PostgreSQL database on [Neon](https://neon.tech). Database
 credentials are supplied through the `SPRING_DATASOURCE_URL`,
 `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD` environment variables.
 
+## Roadmap
+
+- **Spring Security** — replace the current hand-rolled session-based authentication
+  with Spring Security (proper filter chain, access control, CSRF protection).
+  *Currently being learned and planned.*
+
 ## Status
 
 Work in progress — a portfolio project under active development.
