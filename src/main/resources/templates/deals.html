@@ -104,7 +104,7 @@
             <button class="btn btn-solid" type="button" id="deal-toggle">Post a deal</button>
             <a class="btn" href="/building/chat">Building chat</a>
         </div>
-        <form method="post" action="/deals" id="deal-form" class="deal-form"
+        <form method="post" th:action="@{/deals}" id="deal-form" class="deal-form"
               enctype="multipart/form-data" hidden>
             <div class="auth-field">
                 <label for="d-product">Product</label>
@@ -161,7 +161,7 @@
     </div>
 
     <div class="deal-card" th:each="d : ${deals}"
-         th:with="mine=${d.author.id == session.user.id}, remaining=${d.remainingUnits()}">
+         th:with="mine=${d.author.id == currentUser.id}, remaining=${d.remainingUnits()}">
         <img class="deal-photo" th:if="${d.hasImage()}"
              th:src="@{'/deals/' + ${d.id} + '/image'}" alt="" loading="lazy">
         <div class="deal-head">
@@ -192,7 +192,7 @@
             <span th:style="'width:' + ${d.totalUnits > 0 ? d.claimedUnits() * 100 / d.totalUnits : 0} + '%'"></span>
         </div>
 
-        <div class="deal-mine" th:each="cl : ${d.claims}" th:if="${cl.user.id == session.user.id}">
+        <div class="deal-mine" th:each="cl : ${d.claims}" th:if="${cl.user.id == currentUser.id}">
             <span th:text="'You take ' + ${cl.units}">You take 2</span>
             <a class="btn" th:href="@{'/deals/' + ${d.id} + '/chat'}">Chat</a>
             <form method="post" th:action="@{'/deals/' + ${d.id} + '/claim/cancel'}">

@@ -27,7 +27,7 @@
 
         <p class="auth-error" th:if="${param.error}">Invalid username or password</p>
 
-        <form method="post" action="/login">
+        <form method="post" th:action="@{/login}">
             <div class="auth-field">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>

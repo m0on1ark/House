@@ -1,5 +1,6 @@
 package House.prototype.Service;
 
+import House.prototype.Exception.InvalidRequestException;
 import House.prototype.Model.Building;
 import House.prototype.Model.Deal;
 import House.prototype.Model.DealClaim;
@@ -42,14 +43,14 @@ public class DealService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
         Building authorBuilding = author.getBuilding();
         if (authorBuilding == null) {
-            throw new IllegalArgumentException("link a building first");
+            throw new InvalidRequestException("link a building first");
         }
         if (productName == null || productName.isBlank()
                 || storeName == null || storeName.isBlank()) {
-            throw new IllegalArgumentException("product and store are required");
+            throw new InvalidRequestException("product and store are required");
         }
         if (totalUnits < 2 || authorUnits < 1 || authorUnits >= totalUnits) {
-            throw new IllegalArgumentException("bad unit counts");
+            throw new InvalidRequestException("bad unit counts");
         }
         Deal deal = new Deal();
         deal.setAuthor(author);
@@ -68,15 +69,15 @@ public class DealService {
 
     public Deal getById(long dealId) {
         return dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
     }
 
     @Transactional
     public void deleteDeal(long dealId, long userId) {
         Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         if (deal.getAuthor().getId() != userId) {
-            throw new IllegalArgumentException("not your deal");
+            throw new InvalidRequestException("not your deal");
         }
         dealClaimRepository.deleteByDealId(dealId);
         dealMessageRepository.deleteByDealId(dealId);
@@ -90,21 +91,21 @@ public class DealService {
         User claimer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
         Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         if (claimer.getBuilding() == null){
-            throw new IllegalArgumentException("link a building first");
+            throw new InvalidRequestException("link a building first");
         }
         if (claimer.getId() == deal.getAuthor().getId()){
-            throw new IllegalArgumentException("author has his share");
+            throw new InvalidRequestException("author has his share");
         }
         if (units < 1) {
-            throw new IllegalArgumentException("bad count");
+            throw new InvalidRequestException("bad count");
         }
         if (dealClaimRepository.findByDealIdAndUserId(dealId, userId).isPresent()) {
-            throw new IllegalArgumentException("already claimed");
+            throw new InvalidRequestException("already claimed");
         }
         if (units > deal.remainingUnits()) {
-            throw new IllegalArgumentException("not enough units left");
+            throw new InvalidRequestException("not enough units left");
         }
         boolean last = units == deal.remainingUnits();
         DealClaim dealClaim = new DealClaim();
@@ -121,7 +122,7 @@ public class DealService {
 
     public void cancelClaim(long dealId, long userId){
         DealClaim claim = dealClaimRepository.findByDealIdAndUserId(dealId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("nothing to cancel"));
+                .orElseThrow(() -> new InvalidRequestException("nothing to cancel"));
         Deal deal = claim.getDeal();
         dealClaimRepository.delete(claim);
         if (deal.getStatus() == DealStatus.CLOSED) {

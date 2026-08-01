@@ -1,15 +1,21 @@
 package House.prototype.Controller;
 
 import House.prototype.DTO.BuildingSuggestion;
+import House.prototype.Exception.InvalidRequestException;
 import House.prototype.Model.Building;
 import House.prototype.Model.User;
+import House.prototype.Security.AppUserDetails;
+import House.prototype.Security.AutoLogin;
 import House.prototype.Service.DealService;
 import House.prototype.Service.UserService;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,15 +29,17 @@ import java.io.IOException;
 public class UserController {
     private final UserService userService;
     private final DealService dealService;
-    public UserController(UserService userService, DealService dealService){
+    private final AutoLogin autoLogin;
+    public UserController(UserService userService, DealService dealService, AutoLogin autoLogin){
         this.userService = userService;
         this.dealService = dealService;
+        this.autoLogin = autoLogin;
     }
+
     @GetMapping("/")
-    public String showMainPage(HttpSession session, Model model){
-        User user = (User) session.getAttribute("user");
-        if (user != null){
-            model.addAttribute("deals", dealService.findForUser(user.getId(), 0));
+    public String showMainPage(@AuthenticationPrincipal AppUserDetails principal, Model model){
+        if (principal != null){
+            model.addAttribute("deals", dealService.findForUser(principal.getId(), 0));
         }
         return "main";
     }
@@ -45,13 +53,15 @@ public class UserController {
     public String register(@RequestParam String username,
                            @RequestParam String password,
                            @RequestParam String email,
-                           HttpSession session){
+                           HttpServletRequest request,
+                           HttpServletResponse response){
+        User user;
         try{
-            User user = userService.register(username, email, password);
-            session.setAttribute("user", user);
-        }catch (IllegalArgumentException e){
+            user = userService.register(username, email, password);
+        }catch (InvalidRequestException e){
             return "redirect:/register?error";
         }
+        autoLogin.login(user, request, response);
         return "redirect:/account";
     }
 
@@ -59,54 +69,30 @@ public class UserController {
     public String successPage(){
         return "success";
     }
+
     @GetMapping("/login")
     public String showLoginPage(){
         return "login";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password,
-                        HttpSession session){
-        try{
-            User user = userService.login(username, password);
-            session.setAttribute("user", user);
-        }catch (IllegalArgumentException e){
-            return "redirect:/login?error";
-        }
-        return "redirect:/account";
-    }
-
     @GetMapping("/account")
-    public String showAccount(HttpSession session, Model model){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return "redirect:/login";
-        }
-        User user = userService.getById(sessionUser.getId());
+    public String showAccount(@AuthenticationPrincipal AppUserDetails principal, Model model){
+        User user = userService.getById(principal.getId());
         fillProfileModel(model, user);
         model.addAttribute("myDeals", dealService.findByAuthor(user.getId()));
         return "account";
     }
 
     @GetMapping("/account/settings")
-    public String showSettings(HttpSession session, Model model){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return "redirect:/login";
-        }
-        User user = userService.getById(sessionUser.getId());
+    public String showSettings(@AuthenticationPrincipal AppUserDetails principal, Model model){
+        User user = userService.getById(principal.getId());
         fillProfileModel(model, user);
         return "settings";
     }
 
     @GetMapping("/residents")
-    public String showResidents(HttpSession session, Model model){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return "redirect:/login";
-        }
-        User user = userService.getById(sessionUser.getId());
+    public String showResidents(@AuthenticationPrincipal AppUserDetails principal, Model model){
+        User user = userService.getById(principal.getId());
         Building b = user.getBuilding();
         if (b != null){
             String streetPart = b.getStreet() != null
@@ -119,15 +105,12 @@ public class UserController {
     }
 
     @GetMapping("/residents/{id}")
-    public String showResident(@PathVariable long id, HttpSession session, Model model){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return "redirect:/login";
-        }
+    public String showResident(@PathVariable long id,
+                               @AuthenticationPrincipal AppUserDetails principal, Model model){
         User resident;
         try{
-            resident = userService.neighbourProfile(sessionUser.getId(), id);
-        }catch (IllegalArgumentException e){
+            resident = userService.neighbourProfile(principal.getId(), id);
+        }catch (InvalidRequestException e){
             return "redirect:/residents?error";
         }
         model.addAttribute("resident", resident);
@@ -142,15 +125,12 @@ public class UserController {
     }
 
     @GetMapping("/residents/{id}/avatar")
-    public ResponseEntity<byte[]> residentAvatar(@PathVariable long id, HttpSession session){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<byte[]> residentAvatar(@PathVariable long id,
+                                                 @AuthenticationPrincipal AppUserDetails principal){
         User resident;
         try{
-            resident = userService.neighbourProfile(sessionUser.getId(), id);
-        }catch (IllegalArgumentException e){
+            resident = userService.neighbourProfile(principal.getId(), id);
+        }catch (InvalidRequestException e){
             return ResponseEntity.notFound().build();
         }
         if (!resident.hasAvatar()){
@@ -181,17 +161,12 @@ public class UserController {
     }
 
     @PostMapping("/account/username")
-    public String changeUsername(@RequestParam String username, HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
-        try{
-            User updated = userService.changeUsername(user.getId(), username);
-            session.setAttribute("user", updated);
-        }catch (IllegalArgumentException e){
-            return "redirect:/account/settings?error";
-        }
+    public String changeUsername(@RequestParam String username,
+                                 @AuthenticationPrincipal AppUserDetails principal,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response){
+        User updated = userService.changeUsername(principal.getId(), username);
+        autoLogin.login(updated, request, response);
         return "redirect:/account";
     }
 
@@ -201,76 +176,42 @@ public class UserController {
                                 @RequestParam(required = false) String bio,
                                 @RequestParam(required = false) String floor,
                                 @RequestParam(required = false) String apartment,
-                                HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
-        try{
-            User updated = userService.updateProfile(user.getId(), fullName, phone, bio,
-                    floor, apartment);
-            session.setAttribute("user", updated);
-        }catch (IllegalArgumentException e){
-            return "redirect:/account/settings?error";
-        }
+                                @AuthenticationPrincipal AppUserDetails principal){
+        userService.updateProfile(principal.getId(), fullName, phone, bio, floor, apartment);
         return "redirect:/account";
     }
 
     @PostMapping("/account/email")
-    public String changeEmail(@RequestParam String email, HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
-        try{
-            User updated = userService.changeEmail(user.getId(), email);
-            session.setAttribute("user", updated);
-        }catch (IllegalArgumentException e){
-            return "redirect:/account/settings?error";
-        }
+    public String changeEmail(@RequestParam String email,
+                              @AuthenticationPrincipal AppUserDetails principal){
+        userService.changeEmail(principal.getId(), email);
         return "redirect:/account";
     }
 
     @PostMapping("/account/password")
     public String changePassword(@RequestParam String currentPassword,
                                  @RequestParam String newPassword,
-                                 HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
-        try{
-            userService.changePassword(user.getId(), currentPassword, newPassword);
-        }catch (IllegalArgumentException e){
-            return "redirect:/account/settings?error";
-        }
+                                 @AuthenticationPrincipal AppUserDetails principal,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response){
+        User updated = userService.changePassword(principal.getId(), currentPassword, newPassword);
+        autoLogin.login(updated, request, response);
         return "redirect:/account";
     }
 
     @PostMapping("/account/avatar")
-    public String uploadAvatar(@RequestParam MultipartFile avatar, HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
+    public String uploadAvatar(@RequestParam MultipartFile avatar,
+                               @AuthenticationPrincipal AppUserDetails principal) throws IOException {
         if (avatar == null || avatar.isEmpty()){
             return "redirect:/account/settings?error";
         }
-        try{
-            userService.setAvatar(user.getId(), avatar.getBytes(), avatar.getContentType());
-        }catch (IllegalArgumentException | IOException e){
-            return "redirect:/account/settings?error";
-        }
+        userService.setAvatar(principal.getId(), avatar.getBytes(), avatar.getContentType());
         return "redirect:/account/settings";
     }
 
     @GetMapping("/account/avatar")
-    public ResponseEntity<byte[]> avatar(HttpSession session){
-        User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser == null){
-            return ResponseEntity.notFound().build();
-        }
-        User user = userService.getById(sessionUser.getId());
+    public ResponseEntity<byte[]> avatar(@AuthenticationPrincipal AppUserDetails principal){
+        User user = userService.getById(principal.getId());
         if (!user.hasAvatar()){
             return ResponseEntity.notFound().build();
         }
@@ -282,23 +223,14 @@ public class UserController {
 
     @PostMapping("/account/address")
     public String addAddress(@ModelAttribute BuildingSuggestion suggestion,
-                             HttpSession session){
-        User user = (User) session.getAttribute("user");
-        if (user == null){
-            return "redirect:/login";
-        }
-        try{
-            userService.linkBuilding(user.getId(), suggestion);
-        }catch (IllegalArgumentException e){
-            return "redirect:/account/settings?error";
-        }
+                             @AuthenticationPrincipal AppUserDetails principal){
+        userService.linkBuilding(principal.getId(), suggestion);
         return "redirect:/account/settings";
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpSession session){
-        session.invalidate();
-        return "redirect:/";
+    @ExceptionHandler({InvalidRequestException.class, IOException.class})
+    public String handleInvalidRequest(){
+        return "redirect:/account/settings?error";
     }
 
 }

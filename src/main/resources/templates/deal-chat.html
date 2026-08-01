@@ -16,7 +16,7 @@
     <a class="logo" href="/">House</a>
     <div class="nav-auth">
         <a class="btn" href="/deals">Back to deals</a>
-        <form method="post" action="/logout">
+        <form method="post" th:action="@{/logout}">
             <button class="btn btn-solid" type="submit">Log out</button>
         </form>
     </div>
@@ -35,9 +35,9 @@
             <p class="chat-empty" th:if="${messages.isEmpty()}">
                 No messages yet — say hi and agree on the pickup.</p>
             <div class="chat-msg" th:each="m : ${messages}"
-                 th:classappend="${m.author.id == session.user.id} ? 'own'">
+                 th:classappend="${m.author.id == currentUser.id} ? 'own'">
                 <span class="chat-author"
-                      th:text="${m.author.id == session.user.id ? 'you' : m.author.username}">author</span>
+                      th:text="${m.author.id == currentUser.id ? 'you' : m.author.username}">author</span>
                 <span class="chat-time" th:text="${m.timeLabel()}">01.01 12:00</span>
                 <p class="chat-text" th:if="${!#strings.isEmpty(m.text)}" th:text="${m.text}">message text</p>
                 <img class="chat-photo" th:if="${m.hasImage()}"

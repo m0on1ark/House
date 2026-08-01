@@ -49,14 +49,14 @@
     <a class="logo" href="/">House</a>
     <ul class="nav-links">
         <li><a href="#how">How it works</a></li>
-        <li><a th:href="${session.user == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
+        <li><a th:href="${currentUser == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
         <li><a href="#chats">Building chats</a></li>
     </ul>
-    <div class="nav-auth" th:if="${session.user == null}">
+    <div class="nav-auth" th:if="${currentUser == null}">
         <a class="btn" href="/login">Log in</a>
         <a class="btn btn-solid" href="/register">Sign up</a>
     </div>
-    <th:block th:unless="${session.user == null}">
+    <th:block th:unless="${currentUser == null}">
         <div th:replace="~{fragments/nav :: menu}"></div>
     </th:block>
 </nav>
@@ -208,8 +208,8 @@
     <p class="hero-tagline">The deal says buy six.<br>You only need two.</p>
     <p class="hero-sub">Post the offer to your building — neighbors claim the rest.
         Everyone gets the discount, nobody gets the surplus.</p>
-    <a class="btn btn-solid" href="/register" th:if="${session.user == null}">Join your building</a>
-    <a class="btn btn-solid" href="/deals" th:unless="${session.user == null}">Open your building's deals</a>
+    <a class="btn btn-solid" href="/register" th:if="${currentUser == null}">Join your building</a>
+    <a class="btn btn-solid" href="/deals" th:unless="${currentUser == null}">Open your building's deals</a>
 </header>
 
 <div class="shelf" aria-hidden="true">
@@ -268,7 +268,7 @@
 <section id="deals">
     <p class="sec-label">Deals</p>
 
-    <div th:if="${session.user == null}">
+    <div th:if="${currentUser == null}">
         <h2>Deals from your building will live here</h2>
         <div class="empty">
             <p class="empty-title">Nothing here yet</p>
@@ -277,12 +277,12 @@
         </div>
     </div>
 
-    <div th:unless="${session.user == null}">
+    <div th:unless="${currentUser == null}">
         <h2>Your building's deals</h2>
 
         <div th:if="${deals != null and !deals.isEmpty()}">
             <div class="deal-card" th:each="d : ${deals}"
-                 th:with="mine=${d.author.id == session.user.id}, remaining=${d.remainingUnits()}">
+                 th:with="mine=${d.author.id == currentUser.id}, remaining=${d.remainingUnits()}">
                 <img class="deal-photo" th:if="${d.hasImage()}"
                      th:src="@{'/deals/' + ${d.id} + '/image'}" alt="" loading="lazy">
                 <div class="deal-head">
@@ -353,12 +353,12 @@
     </div>
 </section>
 
-<section class="cta" th:if="${session.user == null}">
+<section class="cta" th:if="${currentUser == null}">
     <h2>Move in</h2>
     <p>Create an account and find your building.</p>
     <a class="btn btn-solid" href="/register">Sign up</a>
 </section>
-<section class="cta" th:unless="${session.user == null}">
+<section class="cta" th:unless="${currentUser == null}">
     <h2>Welcome home</h2>
     <p>See what your neighbors are splitting today.</p>
     <a class="btn btn-solid" href="/deals">Go to deals</a>
@@ -369,10 +369,10 @@
         <a class="logo" href="/">House</a>
         <ul class="footer-links">
             <li><a href="#how">How it works</a></li>
-            <li><a th:href="${session.user == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
+            <li><a th:href="${currentUser == null} ? '#deals' : '/deals'" href="#deals">Deals</a></li>
             <li><a href="#chats">Chats</a></li>
-            <li th:if="${session.user == null}"><a href="/register">Sign up</a></li>
-            <li th:unless="${session.user == null}"><a href="/account">My account</a></li>
+            <li th:if="${currentUser == null}"><a href="/register">Sign up</a></li>
+            <li th:unless="${currentUser == null}"><a href="/account">My account</a></li>
         </ul>
         <p class="footer-copy">© 2026 House. Neighbors who split the deals.</p>
     </div>

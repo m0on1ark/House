@@ -1,5 +1,6 @@
 package House.prototype.Service;
 
+import House.prototype.Exception.InvalidRequestException;
 import House.prototype.Model.Building;
 import House.prototype.Model.BuildingMessage;
 import House.prototype.Model.Deal;
@@ -42,10 +43,10 @@ public class ChatService {
     private String cleanBody(String text, boolean hasImage) {
         String body = text == null ? "" : text.trim();
         if (body.isEmpty() && !hasImage) {
-            throw new IllegalArgumentException("empty message");
+            throw new InvalidRequestException("empty message");
         }
         if (body.length() > 1000) {
-            throw new IllegalArgumentException("too long");
+            throw new InvalidRequestException("too long");
         }
         return body;
     }
@@ -55,13 +56,13 @@ public class ChatService {
         boolean hasClaim = dealClaimRepository
                 .findByDealIdAndUserId(deal.getId(), userId).isPresent();
         if (!isAuthor && !hasClaim) {
-            throw new IllegalArgumentException("not a participant");
+            throw new InvalidRequestException("not a participant");
         }
     }
 
     public Deal dealFor(long dealId, long userId) {
         Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         checkParticipant(deal, userId);
         return deal;
     }
@@ -88,7 +89,7 @@ public class ChatService {
 
     public DealMessage dealMessage(long messageId, long userId) {
         DealMessage message = dealMessageRepository.findById(messageId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         checkParticipant(message.getDeal(), userId);
         return message;
     }
@@ -96,7 +97,7 @@ public class ChatService {
     public Building buildingFor(long userId) {
         Building building = loadUser(userId).getBuilding();
         if (building == null) {
-            throw new IllegalArgumentException("link a building first");
+            throw new InvalidRequestException("link a building first");
         }
         return building;
     }
@@ -123,10 +124,10 @@ public class ChatService {
 
     public BuildingMessage buildingMessage(long messageId, long userId) {
         BuildingMessage message = buildingMessageRepository.findById(messageId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid"));
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         Building building = loadUser(userId).getBuilding();
         if (building == null || building.getId() != message.getBuilding().getId()) {
-            throw new IllegalArgumentException("not your building");
+            throw new InvalidRequestException("not your building");
         }
         return message;
     }

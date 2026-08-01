@@ -37,7 +37,7 @@
         <section class="tab-body active" id="tab-personal">
             <h2>Personal info</h2>
 
-            <form method="post" action="/account/avatar" enctype="multipart/form-data" class="avatar-row">
+            <form method="post" th:action="@{/account/avatar}" enctype="multipart/form-data" class="avatar-row">
                 <div class="avatar-wrap avatar-wrap-sm">
                     <img class="account-avatar" th:if="${hasAvatar}" src="/account/avatar" alt="Your avatar">
                     <svg class="account-avatar" th:unless="${hasAvatar}" viewBox="0 0 60 74" aria-hidden="true">
@@ -59,7 +59,7 @@
                 </label>
             </form>
 
-            <form method="post" action="/account/profile">
+            <form method="post" th:action="@{/account/profile}">
                 <div class="auth-field">
                     <label for="s-fullname">Full name</label>
                     <input id="s-fullname" name="fullName" th:value="${fullName}"
@@ -93,7 +93,7 @@
 
         <section class="tab-body" id="tab-account">
             <h2>Email &amp; username</h2>
-            <form method="post" action="/account/username" class="settings-row-form">
+            <form method="post" th:action="@{/account/username}" class="settings-row-form">
                 <div class="auth-field">
                     <label for="s-username">Username</label>
                     <input id="s-username" name="username" th:value="${username}"
@@ -101,7 +101,7 @@
                 </div>
                 <button class="btn" type="submit">Save</button>
             </form>
-            <form method="post" action="/account/email" class="settings-row-form">
+            <form method="post" th:action="@{/account/email}" class="settings-row-form">
                 <div class="auth-field">
                     <label for="s-email">Email</label>
                     <input id="s-email" type="email" name="email" th:value="${email}"
@@ -113,7 +113,7 @@
 
         <section class="tab-body" id="tab-password">
             <h2>Password</h2>
-            <form method="post" action="/account/password">
+            <form method="post" th:action="@{/account/password}">
                 <div class="auth-field">
                     <label for="s-cur">Current password</label>
                     <input id="s-cur" type="password" name="currentPassword"
@@ -136,7 +136,7 @@
             <button class="btn btn-solid" type="button" id="addr-toggle"
                     th:text="${buildingAddress == null} ? 'Add address' : 'Change address'">Add address</button>
 
-            <form method="post" action="/account/address" id="addr-form" class="addr-form" hidden>
+            <form method="post" th:action="@{/account/address}" id="addr-form" class="addr-form" hidden>
                 <div class="auth-field addr-box">
                     <label for="addr-input">Address</label>
                     <div class="addr-input-wrap">

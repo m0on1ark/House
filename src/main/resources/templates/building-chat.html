@@ -31,16 +31,16 @@
             <p class="chat-empty" th:if="${messages.isEmpty()}">
                 No messages yet — be the first to knock on the wall.</p>
             <div class="chat-msg" th:each="m : ${messages}"
-                 th:classappend="${m.author.id == session.user.id} ? 'own'">
+                 th:classappend="${m.author.id == currentUser.id} ? 'own'">
                 <span class="chat-author"
-                      th:text="${m.author.id == session.user.id ? 'you' : m.author.username}">author</span>
+                      th:text="${m.author.id == currentUser.id ? 'you' : m.author.username}">author</span>
                 <span class="chat-time" th:text="${m.timeLabel()}">01.01 12:00</span>
                 <p class="chat-text" th:if="${!#strings.isEmpty(m.text)}" th:text="${m.text}">message text</p>
                 <img class="chat-photo" th:if="${m.hasImage()}"
                      th:src="@{'/chat/building/image/' + ${m.id}}" alt="" loading="lazy">
             </div>
         </div>
-        <form class="chat-form" method="post" action="/building/chat" enctype="multipart/form-data">
+        <form class="chat-form" method="post" th:action="@{/building/chat}" enctype="multipart/form-data">
             <label class="chat-attach" title="Attach a photo">
                 <input type="file" name="image" accept="image/*" hidden>
             </label>

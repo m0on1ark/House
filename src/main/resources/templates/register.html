@@ -27,7 +27,7 @@
 
         <p class="auth-error" th:if="${param.error}">Username or email is already taken</p>
 
-        <form method="post" action="/register">
+        <form method="post" th:action="@{/register}">
             <div class="auth-field">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>

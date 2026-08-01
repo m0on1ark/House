@@ -1,12 +1,13 @@
 package House.prototype.Controller;
 
+import House.prototype.Exception.InvalidRequestException;
 import House.prototype.Model.BuildingMessage;
 import House.prototype.Model.DealMessage;
-import House.prototype.Model.User;
+import House.prototype.Security.AppUserDetails;
 import House.prototype.Service.ChatService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,15 +27,12 @@ public class ChatController {
     }
 
     @GetMapping("/deals/{id}/chat")
-    public String showDealChat(@PathVariable long id, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+    public String showDealChat(@PathVariable long id,
+                               @AuthenticationPrincipal AppUserDetails principal, Model model) {
         try {
-            model.addAttribute("deal", chatService.dealFor(id, user.getId()));
-            model.addAttribute("messages", chatService.dealMessages(id, user.getId()));
-        } catch (IllegalArgumentException e) {
+            model.addAttribute("deal", chatService.dealFor(id, principal.getId()));
+            model.addAttribute("messages", chatService.dealMessages(id, principal.getId()));
+        } catch (InvalidRequestException e) {
             return "redirect:/deals?error";
         }
         return "deal-chat";
@@ -44,11 +42,7 @@ public class ChatController {
     public String sendDealMessage(@PathVariable long id,
                                   @RequestParam(required = false) String text,
                                   @RequestParam(required = false) MultipartFile image,
-                                  HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+                                  @AuthenticationPrincipal AppUserDetails principal) {
         try {
             byte[] bytes = null;
             String type = null;
@@ -56,40 +50,33 @@ public class ChatController {
                 bytes = image.getBytes();
                 type = image.getContentType();
             }
-            chatService.sendDealMessage(id, user.getId(), text, bytes, type);
-        } catch (IllegalArgumentException | IOException e) {
+            chatService.sendDealMessage(id, principal.getId(), text, bytes, type);
+        } catch (InvalidRequestException | IOException e) {
             return "redirect:/deals?error";
         }
         return "redirect:/deals/" + id + "/chat";
     }
 
     @GetMapping("/chat/deal/image/{messageId}")
-    public ResponseEntity<byte[]> dealMessageImage(@PathVariable long messageId, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<byte[]> dealMessageImage(@PathVariable long messageId,
+                                                   @AuthenticationPrincipal AppUserDetails principal) {
         try {
-            DealMessage m = chatService.dealMessage(messageId, user.getId());
+            DealMessage m = chatService.dealMessage(messageId, principal.getId());
             if (!m.hasImage()) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok().contentType(mediaType(m.getImageType())).body(m.getImage());
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidRequestException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/building/chat")
-    public String showBuildingChat(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+    public String showBuildingChat(@AuthenticationPrincipal AppUserDetails principal, Model model) {
         try {
-            model.addAttribute("building", chatService.buildingFor(user.getId()));
-            model.addAttribute("messages", chatService.buildingMessages(user.getId()));
-        } catch (IllegalArgumentException e) {
+            model.addAttribute("building", chatService.buildingFor(principal.getId()));
+            model.addAttribute("messages", chatService.buildingMessages(principal.getId()));
+        } catch (InvalidRequestException e) {
             return "redirect:/account?error";
         }
         return "building-chat";
@@ -98,11 +85,7 @@ public class ChatController {
     @PostMapping("/building/chat")
     public String sendBuildingMessage(@RequestParam(required = false) String text,
                                       @RequestParam(required = false) MultipartFile image,
-                                      HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
+                                      @AuthenticationPrincipal AppUserDetails principal) {
         try {
             byte[] bytes = null;
             String type = null;
@@ -110,26 +93,23 @@ public class ChatController {
                 bytes = image.getBytes();
                 type = image.getContentType();
             }
-            chatService.sendBuildingMessage(user.getId(), text, bytes, type);
-        } catch (IllegalArgumentException | IOException e) {
+            chatService.sendBuildingMessage(principal.getId(), text, bytes, type);
+        } catch (InvalidRequestException | IOException e) {
             return "redirect:/account?error";
         }
         return "redirect:/building/chat";
     }
 
     @GetMapping("/chat/building/image/{messageId}")
-    public ResponseEntity<byte[]> buildingMessageImage(@PathVariable long messageId, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<byte[]> buildingMessageImage(@PathVariable long messageId,
+                                                       @AuthenticationPrincipal AppUserDetails principal) {
         try {
-            BuildingMessage m = chatService.buildingMessage(messageId, user.getId());
+            BuildingMessage m = chatService.buildingMessage(messageId, principal.getId());
             if (!m.hasImage()) {
                 return ResponseEntity.notFound().build();
             }
             return ResponseEntity.ok().contentType(mediaType(m.getImageType())).body(m.getImage());
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidRequestException e) {
             return ResponseEntity.notFound().build();
         }
     }
