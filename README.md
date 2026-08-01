@@ -1,5 +1,7 @@
 # House
 
+[![CI](https://github.com/m0on1ark/House/actions/workflows/ci.yml/badge.svg)](https://github.com/m0on1ark/House/actions/workflows/ci.yml)
+
 A web app for neighbours who live in the same building. Residents find their house
 by address, meet each other, chat, and organise **group purchases** — splitting bulk
 prices and delivery across several apartments.
@@ -178,6 +180,12 @@ default (override with the `PORT` environment variable).
   profile stays hidden from residents of another building.
 - **`PrototypeApplicationTests`** — context load check; needs a reachable
   PostgreSQL, so run `docker compose up db` first if the app is not running.
+
+GitHub Actions runs `./mvnw verify` on every push to `main` and on every pull
+request (`.github/workflows/ci.yml`), against a throwaway PostgreSQL 16 service
+container. Because that database starts empty, the run also proves the Flyway
+migrations build the schema from nothing — not just that they match a database
+that already exists.
 
 ## Deployment
 
