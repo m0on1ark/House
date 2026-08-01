@@ -80,6 +80,14 @@ src/main/resources/
 Thymeleaf rendering the response views. The database schema is managed entirely
 through Flyway migrations, and JPA runs in `validate` mode against it.
 
+**Loading strategy:** every `@ManyToOne` is `LAZY`, and the queries behind a
+listing declare what they need with `@EntityGraph`, so a page costs a fixed
+number of queries instead of one per row. The deals listing is filtered in
+SQL — `BuildingRepository.findIdsWithinKm` does the haversine in Postgres and
+the deals are fetched by `building_id in (…)`, rather than loading every deal
+in the database and filtering the stream in Java. On a 200-deal dataset that
+took `/deals` from 67 queries to 2, and `/deals?radius=5` from 133 to 4.
+
 **Error handling:** services throw `InvalidRequestException` for anything the
 visitor caused — bad input, an action they are not allowed to take, an id in the
 URL that does not exist. Controllers do not catch it one call at a time; an
@@ -171,6 +179,10 @@ default (override with the `PORT` environment variable).
   filter chain with `MockMvc`: an anonymous visitor is redirected to `/login`,
   a signed-in one reaches the same URL, a form POST without a CSRF token is
   rejected with `403`, and login succeeds or fails on the right credentials.
+- **`DealListingQueryTest`** — a `@DataJpaTest` against PostgreSQL: the radius
+  query matches the right buildings and skips ones without coordinates, and the
+  deals listing brings its author, building and claims back in a single query.
+  Remove the `@EntityGraph` and that last test goes from 1 query to 5.
 - **`DealControllerTest`** — error handling: a rejected claim redirects back with
   `?error`, a missing deal image is a `404` rather than a redirect, and a broken
   account does not turn the deals page into a redirect loop.

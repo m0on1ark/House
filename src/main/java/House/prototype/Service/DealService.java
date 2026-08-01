@@ -6,6 +6,7 @@ import House.prototype.Model.Deal;
 import House.prototype.Model.DealClaim;
 import House.prototype.Model.DealStatus;
 import House.prototype.Model.User;
+import House.prototype.Repository.BuildingRepository;
 import House.prototype.Repository.DealClaimRepository;
 import House.prototype.Repository.DealMessageRepository;
 import House.prototype.Repository.DealRepository;
@@ -13,7 +14,9 @@ import House.prototype.Repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class DealService {
@@ -21,14 +24,17 @@ public class DealService {
     private final UserRepository userRepository;
     private final DealRepository dealRepository;
     private final DealMessageRepository dealMessageRepository;
+    private final BuildingRepository buildingRepository;
 
     public DealService(UserRepository userRepository, DealRepository dealRepository,
                        DealClaimRepository dealClaimRepository,
-                       DealMessageRepository dealMessageRepository){
+                       DealMessageRepository dealMessageRepository,
+                       BuildingRepository buildingRepository){
         this.userRepository = userRepository;
         this.dealRepository = dealRepository;
         this.dealClaimRepository = dealClaimRepository;
         this.dealMessageRepository = dealMessageRepository;
+        this.buildingRepository = buildingRepository;
     }
     public Deal createDeal(long authorId,
                              String productName,
@@ -138,22 +144,13 @@ public class DealService {
         if (home == null){
             return List.of();
         }
-        return dealRepository.findAllByOrderByCreatedAtDesc().stream()
-                .filter(d -> {
-                    Building b = d.getBuilding();
-                    if (b.getId() == home.getId()){
-                        return true;
-                    }
-                    if (radiusKm <= 0){
-                        return false;
-                    }
-                    if (home.getLat() == null || home.getLon() == null
-                            || b.getLat() == null || b.getLon() == null){
-                        return false;
-                    }
-                    return distanceKm(home, b) <= radiusKm;
-                })
-                .toList();
+        Set<Long> buildingIds = new LinkedHashSet<>();
+        buildingIds.add(home.getId());
+        if (radiusKm > 0 && home.getLat() != null && home.getLon() != null){
+            buildingIds.addAll(buildingRepository.findIdsWithinKm(
+                    home.getLat(), home.getLon(), radiusKm));
+        }
+        return dealRepository.findByBuildingIdInOrderByCreatedAtDesc(buildingIds);
     }
 
     public long homeBuildingId(long userId){
@@ -168,15 +165,5 @@ public class DealService {
                 .getBuilding();
     }
 
-    private static double distanceKm(Building a, Building b){
-        double earthRadius = 6371.0;
-        double dLat = Math.toRadians(b.getLat() - a.getLat());
-        double dLon = Math.toRadians(b.getLon() - a.getLon());
-        double lat1 = Math.toRadians(a.getLat());
-        double lat2 = Math.toRadians(b.getLat());
-        double h = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        return 2 * earthRadius * Math.asin(Math.sqrt(h));
-    }
 
 }
