@@ -65,11 +65,6 @@ public class UserController {
         return "redirect:/account";
     }
 
-    @GetMapping("/success")
-    public String successPage(){
-        return "success";
-    }
-
     @GetMapping("/login")
     public String showLoginPage(){
         return "login";

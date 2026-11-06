@@ -6,9 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NominatimResponse {
 
-    @JsonProperty("place_id")
-    private long placeId;
-
     @JsonProperty("osm_id")
     private long osmId;
 
@@ -53,8 +50,6 @@ public class NominatimResponse {
         public void setPostcode(String postcode) { this.postcode = postcode; }
     }
 
-    public long getPlaceId() { return placeId; }
-    public void setPlaceId(long placeId) { this.placeId = placeId; }
     public long getOsmId() { return osmId; }
     public void setOsmId(long osmId) { this.osmId = osmId; }
     public String getDisplayName() { return displayName; }
