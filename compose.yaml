@@ -2,15 +2,15 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: house
-      POSTGRES_USER: house_user
-      POSTGRES_PASSWORD: choco_2005
+      POSTGRES_DB: ${DB_NAME:-house}
+      POSTGRES_USER: ${DB_USER:-house_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-choco_2005}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U house_user -d house"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,11 +21,11 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/house
-      SPRING_DATASOURCE_USERNAME: house_user
-      SPRING_DATASOURCE_PASSWORD: choco_2005
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME:-house}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-house_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-choco_2005}
     ports:
-      - "8080:8080"
+      - "${APP_PORT:-8080}:8080"
 
 volumes:
   pgdata:
