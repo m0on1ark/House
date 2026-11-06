@@ -80,7 +80,7 @@ public class DealService {
 
     @Transactional
     public void deleteDeal(long dealId, long userId) {
-        Deal deal = dealRepository.findById(dealId)
+        Deal deal = dealRepository.findByIdForUpdate(dealId)
                 .orElseThrow(() -> new InvalidRequestException("Invalid"));
         if (deal.getAuthor().getId() != userId) {
             throw new InvalidRequestException("not your deal");
@@ -93,11 +93,13 @@ public class DealService {
     public List<Deal> findByAuthor(long userId) {
         return dealRepository.findByAuthorIdOrderByCreatedAtDesc(userId);
     }
+    @Transactional
     public DealClaim claim(long dealId, long userId, int units){
+        // lock the deal before reading its claims, so remainingUnits() can't go stale
+        Deal deal = dealRepository.findByIdForUpdate(dealId)
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         User claimer = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid"));
-        Deal deal = dealRepository.findById(dealId)
-                .orElseThrow(() -> new InvalidRequestException("Invalid"));
         if (claimer.getBuilding() == null){
             throw new InvalidRequestException("link a building first");
         }
@@ -126,10 +128,12 @@ public class DealService {
         return dealClaim;
     }
 
+    @Transactional
     public void cancelClaim(long dealId, long userId){
+        Deal deal = dealRepository.findByIdForUpdate(dealId)
+                .orElseThrow(() -> new InvalidRequestException("nothing to cancel"));
         DealClaim claim = dealClaimRepository.findByDealIdAndUserId(dealId, userId)
                 .orElseThrow(() -> new InvalidRequestException("nothing to cancel"));
-        Deal deal = claim.getDeal();
         dealClaimRepository.delete(claim);
         if (deal.getStatus() == DealStatus.CLOSED) {
             deal.setStatus(DealStatus.OPEN);

@@ -2,14 +2,32 @@ package House.prototype.Repository;
 
 import House.prototype.Model.Building;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface BuildingRepository extends JpaRepository<Building, Long> {
     Optional<Building> findByOsmId(long osmId);
+
+    // two residents may link the same new building at once; the loser's insert is a no-op
+    @Transactional
+    @Modifying
+    @Query(value = """
+            insert into buildings (osm_id, city, street, number, postal_code, lat, lon)
+            values (:osmId, :city, :street, :number, :postalCode, :lat, :lon)
+            on conflict (osm_id) do nothing
+            """, nativeQuery = true)
+    void insertIfAbsent(@Param("osmId") long osmId,
+                        @Param("city") String city,
+                        @Param("street") String street,
+                        @Param("number") String number,
+                        @Param("postalCode") String postalCode,
+                        @Param("lat") Double lat,
+                        @Param("lon") Double lon);
 
     @Query(value = """
             select b.id from buildings b

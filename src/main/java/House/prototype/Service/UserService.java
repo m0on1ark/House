@@ -3,6 +3,7 @@ import House.prototype.Exception.InvalidRequestException;
 import House.prototype.DTO.BuildingSuggestion;
 import House.prototype.Model.Building;
 import House.prototype.Model.User;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import House.prototype.Repository.BuildingRepository;
 import House.prototype.Repository.UserRepository;
@@ -30,7 +31,7 @@ public class UserService {
         user.setEmail(email);
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        return userRepository.save(user);
+        return saveUnique(user);
     }
 
     public User getById(long id){
@@ -69,19 +70,10 @@ public class UserService {
             throw new InvalidRequestException("address not selected");
         }
         User user = getById(userId);
-        Building building = buildingRepository
-                .findByOsmId(s.osmId())
-                .orElseGet(() -> {
-                    Building b = new Building();
-                    b.setOsmId(s.osmId());
-                    b.setCity(s.city());
-                    b.setStreet(s.street());
-                    b.setNumber(s.number());
-                    b.setPostalCode(s.postalCode());
-                    b.setLat(s.lat());
-                    b.setLon(s.lon());
-                    return buildingRepository.save(b);
-                });
+        buildingRepository.insertIfAbsent(s.osmId(), s.city(), s.street(), s.number(),
+                s.postalCode(), s.lat(), s.lon());
+        Building building = buildingRepository.findByOsmId(s.osmId())
+                .orElseThrow(() -> new InvalidRequestException("address not selected"));
         user.setBuilding(building);
         return userRepository.save(user);
     }
@@ -103,7 +95,7 @@ public class UserService {
             throw new InvalidRequestException("is taken");
         }
         user.setUsername(name);
-        return userRepository.save(user);
+        return saveUnique(user);
     }
 
     public User updateProfile(long userId, String fullName, String phone, String bio,
@@ -127,7 +119,7 @@ public class UserService {
             throw new InvalidRequestException("is taken");
         }
         user.setEmail(email);
-        return userRepository.save(user);
+        return saveUnique(user);
     }
 
     public User changePassword(long userId, String currentPassword, String newPassword){
@@ -140,6 +132,15 @@ public class UserService {
         }
         user.setPassword(passwordEncoder.encode(newPassword.trim()));
         return userRepository.save(user);
+    }
+
+    // the exists* checks above can race with a parallel request; the unique constraints can't
+    private User saveUnique(User user){
+        try{
+            return userRepository.save(user);
+        }catch (DataIntegrityViolationException e){
+            throw new InvalidRequestException("is taken");
+        }
     }
 
     private static String trimToNull(String value){

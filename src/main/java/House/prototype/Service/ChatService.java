@@ -12,6 +12,7 @@ import House.prototype.Repository.DealMessageRepository;
 import House.prototype.Repository.DealRepository;
 import House.prototype.Repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -72,9 +73,12 @@ public class ChatService {
         return dealMessageRepository.findByDealIdOrderByCreatedAtAsc(dealId);
     }
 
+    @Transactional
     public DealMessage sendDealMessage(long dealId, long userId, String text,
                                        byte[] image, String imageType) {
-        Deal deal = dealFor(dealId, userId);
+        Deal deal = dealRepository.findByIdForShare(dealId)
+                .orElseThrow(() -> new InvalidRequestException("Invalid"));
+        checkParticipant(deal, userId);
         boolean hasImage = image != null && image.length > 0;
         DealMessage message = new DealMessage();
         message.setDeal(deal);
